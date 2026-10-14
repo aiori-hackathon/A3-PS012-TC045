@@ -9,8 +9,9 @@ ResolverLens is a probe tool, being built for the AIORI Hackathon 3, that checks
 
 ## Team Introduction Video
 
-[Watch the team introduction video on YouTube](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
+[Watch the team introduction video on YouTube](https://youtu.be/QG4MiJL1zHA)
 
+youtube: https://youtu.be/QG4MiJL1zHA
 
 ## The Problem
 
