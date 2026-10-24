@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "resolverlens"
+version = "0.0.1"
+description = "ResolverLens: authorised DNS resolver exposure assessment (A3-PS012-TC045)"
+requires-python = ">=3.10"
+dependencies = ["dnspython>=2.4", "PyYAML>=6", "Jinja2>=3.1"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.scripts]
+rlens = "resolverlens.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
