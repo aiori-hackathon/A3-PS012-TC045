@@ -1,0 +1,32 @@
+# ResolverLens lab definition (D1 input). Edited by hand, read by lab/generate.py
+# and by the tool. Expected labels are the seeded ground truth; the probe never sets them.
+lab:
+  network: rl-lab
+  subnet: 10.10.0.0/16
+  baseline_zone: lab.test
+  trusted_range: 10.10.1.0/24
+  canary: {name: rl-canary, ip: 10.10.0.5, zone: canary.lab, marker_ip: 192.0.2.53}
+  clients:
+    external: {name: rl-ext, ip: 10.10.2.10}
+    control: {name: rl-ctl, ip: 10.10.1.10}
+targets:
+  - {id: t01, ip: 10.10.0.11, software: bind,    behavior: open_recursive,    expected: recursive}
+  - {id: t02, ip: 10.10.0.12, software: bind,    behavior: open_recursive,    expected: recursive}
+  - {id: t03, ip: 10.10.0.13, software: unbound, behavior: open_recursive,    expected: recursive}
+  - {id: t04, ip: 10.10.0.14, software: unbound, behavior: open_recursive,    expected: recursive}
+  - {id: t05, ip: 10.10.0.15, software: dnsmasq, behavior: open_recursive,    expected: recursive}
+  - {id: t06, ip: 10.10.0.16, software: bind,    behavior: policy_refusing,   expected: refused}
+  - {id: t07, ip: 10.10.0.17, software: bind,    behavior: policy_refusing,   expected: refused}
+  - {id: t08, ip: 10.10.0.18, software: unbound, behavior: policy_refusing,   expected: refused}
+  - {id: t09, ip: 10.10.0.19, software: unbound, behavior: policy_refusing,   expected: refused}
+  - {id: t10, ip: 10.10.0.20, software: bind,    behavior: authoritative_only, expected: authoritative_only}
+  - {id: t11, ip: 10.10.0.21, software: bind,    behavior: authoritative_only, expected: authoritative_only}
+  - {id: t12, ip: 10.10.0.22, software: nsd,     behavior: authoritative_only, expected: authoritative_only}
+  - {id: t13, ip: 10.10.0.23, software: nsd,     behavior: authoritative_only, expected: authoritative_only}
+  - {id: t14, ip: 10.10.0.24, software: dnsmasq, behavior: forwarder,         expected: recursive, forward_to: t01}
+  - {id: t15, ip: 10.10.0.25, software: unbound, behavior: forwarder,         expected: recursive, forward_to: t03}
+  - {id: t16, ip: 10.10.0.26, software: bind,    behavior: forwarder,         expected: recursive, forward_to: t05}
+  - {id: t17, ip: 10.10.0.27, software: unbound, behavior: slow,              expected: inconclusive}
+  - {id: t18, ip: 10.10.0.28, software: bind,    behavior: rate_limited,      expected: inconclusive}
+  - {id: t19, ip: 10.10.0.29, software: dnsmasq, behavior: silent,            expected: inconclusive}
+  - {id: t20, ip: 10.10.0.30, software: bind,    behavior: broken_upstream,   expected: inconclusive}
