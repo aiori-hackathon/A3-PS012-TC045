@@ -4,7 +4,7 @@ RL_UID := $(shell id -u)
 RL_GID := $(shell id -g)
 export RL_UID RL_GID
 COMPOSE := docker compose -f lab/generated/docker-compose.yml
-.PHONY: help setup test clean lab-gen lab-build lab-up lab-down lab-ps lab-logs lab-check-ext lab-check-ctl lab-check lab-proof
+.PHONY: help setup test clean lab-gen lab-build lab-up lab-down lab-ps lab-logs lab-check-ext lab-check-ctl lab-check lab-proof probe-dry probe
 help:
 > @echo "make setup        - create .venv and install dependencies"
 > @echo "make test         - run unit tests"
@@ -16,6 +16,8 @@ help:
 > @echo "make lab-check    - verify every server from both vantage points"
 > @echo "make lab-proof    - write docs/phase-1.md with the evidence"
 > @echo "make lab-down     - stop and remove the lab"
+> @echo "make probe-dry    - show the probe plan, send nothing"
+> @echo "make probe [RUN=name] - run the probe from the external client against all 20 targets"
 setup:
 > python3 -m venv .venv
 > .venv/bin/pip install -e ".[dev]"
@@ -46,3 +48,7 @@ lab-check-ctl:
 lab-check: lab-check-ext lab-check-ctl
 lab-proof:
 > bash lab/proof.sh
+probe-dry:
+> docker exec rl-ext python3 -m resolverlens.cli probe --config config/config.yaml --dry-run
+probe:
+> docker exec rl-ext python3 -m resolverlens.cli probe --config config/config.yaml $(if $(RUN),--run-id $(RUN),)

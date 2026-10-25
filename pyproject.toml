@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "resolverlens"
-version = "0.0.1"
+version = "0.2.0"
 description = "ResolverLens: authorised DNS resolver exposure assessment (A3-PS012-TC045)"
 requires-python = ">=3.10"
 dependencies = ["dnspython>=2.4", "PyYAML>=6", "Jinja2>=3.1"]

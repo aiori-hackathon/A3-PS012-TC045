@@ -1,0 +1,21 @@
+# ResolverLens settings (D1 input). Hard safety caps in config.py cannot be raised from here.
+targets_file: lab/targets.yaml
+canary_log: /canary-logs/queries.log
+run:
+  seed: 1337
+  output_dir: results
+probe:
+  timeout_s: 2.0          # wait for a reply
+  attempts: 3             # canary attempts per target, each with a fresh name
+  tcp_retry: true         # retry over TCP when a reply is truncated
+  edns_payload: 1232      # advertised UDP buffer, bytes
+  canary_wait_s: 2.0      # how long to wait for the canary log after a reply
+  source_address: null    # bind a source address (leave null in the lab)
+rate:
+  per_target: {rate: 1.0, burst: 2}   # queries per second to one target
+  global: {rate: 5.0, burst: 5}       # queries per second to all targets together
+  jitter_ms: 50                       # seeded random delay added to each query
+safety:
+  max_targets: 20
+  max_reply_bytes: 1232               # stop the run if any reply is bigger
+  max_ratio: 10.0                     # stop if reply size / query size is bigger
