@@ -1,0 +1,4 @@
+$TTL 300
+@   IN SOA ns.lab.test. hostmaster.lab.test. ( 1 3600 600 86400 300 )
+@   IN NS  ns.lab.test.
+ns  IN A   10.10.0.21
