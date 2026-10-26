@@ -67,3 +67,9 @@ def test_same_seed_and_run_id_give_the_same_names(lab_files):
     run_probe(lab_files["config"], run_id="same", out=quiet, transport=ok_transport)
     second = [json.loads(l)["qname"] for l in (lab_files["dir"] / "results" / "same" / "evidence.jsonl").read_text().splitlines()]
     assert first == second
+
+
+def test_manifest_records_the_canary_marker(lab_files):
+    run_probe(lab_files["config"], run_id="r7", out=quiet, transport=ok_transport)
+    m = json.loads((lab_files["dir"] / "results" / "r7" / "manifest.json").read_text())
+    assert m["canary"] == {"zone": "canary.lab", "ip": "10.10.0.5", "marker_ip": "192.0.2.53"}

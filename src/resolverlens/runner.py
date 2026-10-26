@@ -62,6 +62,7 @@ def run_probe(config_path, only=None, dry_run=False, run_id=None, out=print, tra
     run_dir.mkdir(parents=True)
     manifest = {"tool_version": __version__, "run_id": run_id, "status": "running", "started_utc": _utc(),
                 "seed": cfg.seed, "config_digest": config_digest(cfg, targets_text), "config": cfg.raw,
+                "canary": {"zone": lab["canary"]["zone"], "ip": lab["canary"]["ip"], "marker_ip": lab["canary"]["marker_ip"]},
                 "targets": [{"id": t.id, "ip": t.ip, "software": t.software} for t in targets],
                 "python": platform.python_version()}
     write_manifest(run_dir, manifest)
