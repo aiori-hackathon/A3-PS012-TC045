@@ -1,0 +1,370 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>DNS Resolver Exposure Assessment Report: phase4-a</title>
+<style>
+@page { size: A4; margin: 14mm; }
+body { font-family: "DejaVu Sans", Arial, sans-serif; font-size: 10pt; color: #111; line-height: 1.35; }
+h1 { color: #0000cc; font-size: 20pt; margin: 0 0 4px; } h2 { color: #0000cc; font-size: 13pt; margin: 18px 0 6px; border-bottom: 1px solid #0000cc; }
+h3 { font-size: 10.5pt; margin: 10px 0 4px; } table { border-collapse: collapse; width: 100%; margin: 6px 0; }
+th, td { border: 1px solid #999; padding: 3px 5px; text-align: left; vertical-align: top; font-size: 8.5pt; } th { background: #0000cc; color: #fff; }
+.num { text-align: center; } .ok { color: #1b8a4b; font-weight: bold; } .bad { color: #c0392b; font-weight: bold; }
+.box { background: #eef1ff; border-left: 4px solid #0000cc; padding: 6px 10px; margin: 6px 0; } .small { font-size: 8pt; color: #444; }
+.card { page-break-inside: avoid; margin: 8px 0; } .legend { font-size: 8.5pt; margin-top: 3px; } code { font-size: 8pt; }
+tr { page-break-inside: avoid; } h2, h3 { page-break-after: avoid; }
+.diag { background: #cdebd8; } .off { background: #f6d5d1; } .zero { color: #888; }
+</style></head><body>
+<h1>DNS Resolver Exposure Assessment Report</h1>
+<div class="small">Team A3-PS012-TC045 &middot; AIORI Hackathon 3 &middot; PS-012 &middot; ResolverLens 0.2.0 &middot; run <b>phase4-a</b>
+&middot; started 2026-10-26T11:39:32+00:00 &middot; 20 authorised lab servers &middot; 80 probes in 70.8 s</div>
+
+<h2>1. Summary</h2>
+<div class="box">
+<b>8 of 20</b> servers provide recursion to the external client:
+t01 (bind), t02 (bind), t03 (unbound), t04 (unbound), t05 (dnsmasq), t14 (dnsmasq), t15 (unbound), t16 (bind).
+
+Every decisive verdict matches the seeded ground truth. 
+Accuracy 100.0% (20/20), accuracy on decided cases 100.0%, coverage 80.0%
+(16 of 20 servers decided; 4 correctly reported as Inconclusive).
+</div>
+<svg width="600" height="26" viewBox="0 0 600 26"><rect x="0.0" y="0" width="240.0" height="26" fill="#c0392b"/><text x="120.0" y="17" fill="#fff" font-size="11" text-anchor="middle">8</text><rect x="240.0" y="0" width="120.0" height="26" fill="#1b8a4b"/><text x="300.0" y="17" fill="#fff" font-size="11" text-anchor="middle">4</text><rect x="360.0" y="0" width="120.0" height="26" fill="#0000cc"/><text x="420.0" y="17" fill="#fff" font-size="11" text-anchor="middle">4</text><rect x="480.0" y="0" width="120.0" height="26" fill="#d97706"/><text x="540.0" y="17" fill="#fff" font-size="11" text-anchor="middle">4</text></svg><div class="legend"><span style="color:#c0392b">&#9632;</span> Recursive (8) &nbsp; <span style="color:#1b8a4b">&#9632;</span> Authoritative-only (4) &nbsp; <span style="color:#0000cc">&#9632;</span> Refused (4) &nbsp; <span style="color:#d97706">&#9632;</span> Inconclusive (4) &nbsp; </div>
+<p class="small">How to read the labels. <b>Recursive</b>: the server looked up a name for the external client (proved by our own canary server's log).
+<b>Authoritative-only</b>: it answers its own zone but does not recurse. <b>Refused</b>: it denies the external client. <b>Inconclusive</b>: the evidence is missing or
+contradictory, and the reason is recorded. Verdicts follow the rules on the method page (section 9).</p>
+
+<h2>2. Findings per server</h2>
+<table><tr><th>Server</th><th>Address</th><th>Software</th><th>Verdict</th><th>Reason</th><th>Canary evidence (who asked the canary)</th>
+<th>Ground truth (lab only)</th><th>Match</th></tr>
+<tr><td>t01</td><td>10.10.0.11</td><td>bind</td>
+<td style="color:#c0392b"><b>Recursive</b></td><td>-</td><td>10.10.0.11</td>
+<td>Recursive</td><td class="ok">yes</td></tr><tr><td>t02</td><td>10.10.0.12</td><td>bind</td>
+<td style="color:#c0392b"><b>Recursive</b></td><td>-</td><td>10.10.0.12</td>
+<td>Recursive</td><td class="ok">yes</td></tr><tr><td>t03</td><td>10.10.0.13</td><td>unbound</td>
+<td style="color:#c0392b"><b>Recursive</b></td><td>-</td><td>10.10.0.13</td>
+<td>Recursive</td><td class="ok">yes</td></tr><tr><td>t04</td><td>10.10.0.14</td><td>unbound</td>
+<td style="color:#c0392b"><b>Recursive</b></td><td>-</td><td>10.10.0.14</td>
+<td>Recursive</td><td class="ok">yes</td></tr><tr><td>t05</td><td>10.10.0.15</td><td>dnsmasq</td>
+<td style="color:#c0392b"><b>Recursive</b></td><td>-</td><td>10.10.0.15</td>
+<td>Recursive</td><td class="ok">yes</td></tr><tr><td>t06</td><td>10.10.0.16</td><td>bind</td>
+<td style="color:#0000cc"><b>Refused</b></td><td>-</td><td>-</td>
+<td>Refused</td><td class="ok">yes</td></tr><tr><td>t07</td><td>10.10.0.17</td><td>bind</td>
+<td style="color:#0000cc"><b>Refused</b></td><td>-</td><td>-</td>
+<td>Refused</td><td class="ok">yes</td></tr><tr><td>t08</td><td>10.10.0.18</td><td>unbound</td>
+<td style="color:#0000cc"><b>Refused</b></td><td>-</td><td>-</td>
+<td>Refused</td><td class="ok">yes</td></tr><tr><td>t09</td><td>10.10.0.19</td><td>unbound</td>
+<td style="color:#0000cc"><b>Refused</b></td><td>-</td><td>-</td>
+<td>Refused</td><td class="ok">yes</td></tr><tr><td>t10</td><td>10.10.0.20</td><td>bind</td>
+<td style="color:#1b8a4b"><b>Authoritative-only</b></td><td>-</td><td>-</td>
+<td>Authoritative-only</td><td class="ok">yes</td></tr><tr><td>t11</td><td>10.10.0.21</td><td>bind</td>
+<td style="color:#1b8a4b"><b>Authoritative-only</b></td><td>-</td><td>-</td>
+<td>Authoritative-only</td><td class="ok">yes</td></tr><tr><td>t12</td><td>10.10.0.22</td><td>nsd</td>
+<td style="color:#1b8a4b"><b>Authoritative-only</b></td><td>-</td><td>-</td>
+<td>Authoritative-only</td><td class="ok">yes</td></tr><tr><td>t13</td><td>10.10.0.23</td><td>nsd</td>
+<td style="color:#1b8a4b"><b>Authoritative-only</b></td><td>-</td><td>-</td>
+<td>Authoritative-only</td><td class="ok">yes</td></tr><tr><td>t14</td><td>10.10.0.24</td><td>dnsmasq</td>
+<td style="color:#c0392b"><b>Recursive</b></td><td>-</td><td>10.10.0.11</td>
+<td>Recursive</td><td class="ok">yes</td></tr><tr><td>t15</td><td>10.10.0.25</td><td>unbound</td>
+<td style="color:#c0392b"><b>Recursive</b></td><td>-</td><td>10.10.0.13</td>
+<td>Recursive</td><td class="ok">yes</td></tr><tr><td>t16</td><td>10.10.0.26</td><td>bind</td>
+<td style="color:#c0392b"><b>Recursive</b></td><td>-</td><td>10.10.0.15</td>
+<td>Recursive</td><td class="ok">yes</td></tr><tr><td>t17</td><td>10.10.0.27</td><td>unbound</td>
+<td style="color:#d97706"><b>Inconclusive</b></td><td>TIMEOUT</td><td>-</td>
+<td>Inconclusive</td><td class="ok">yes</td></tr><tr><td>t18</td><td>10.10.0.28</td><td>bind</td>
+<td style="color:#d97706"><b>Inconclusive</b></td><td>TIMEOUT</td><td>-</td>
+<td>Inconclusive</td><td class="ok">yes</td></tr><tr><td>t19</td><td>10.10.0.29</td><td>dnsmasq</td>
+<td style="color:#d97706"><b>Inconclusive</b></td><td>TIMEOUT</td><td>-</td>
+<td>Inconclusive</td><td class="ok">yes</td></tr><tr><td>t20</td><td>10.10.0.30</td><td>bind</td>
+<td style="color:#d97706"><b>Inconclusive</b></td><td>TIMEOUT</td><td>-</td>
+<td>Inconclusive</td><td class="ok">yes</td></tr></table>
+<p class="small">The ground-truth column exists only because this is a seeded lab. A real assessment has no such column.</p>
+
+<h2>3. Evaluation against the seeded ground truth</h2>
+<p>Rows are the expected labels, columns are what ResolverLens reported. Green cells are correct, red cells are errors.</p>
+<table><tr><th>Expected \ Reported</th><th class="num">Recursive</th><th class="num">Authoritative-only</th><th class="num">Refused</th><th class="num">Inconclusive</th><th class="num">Total</th></tr>
+<tr><td><b>Recursive</b></td>
+<td class="num diag">8</td><td class="num zero">0</td><td class="num zero">0</td><td class="num zero">0</td>
+<td class="num">8</td></tr><tr><td><b>Authoritative-only</b></td>
+<td class="num zero">0</td><td class="num diag">4</td><td class="num zero">0</td><td class="num zero">0</td>
+<td class="num">4</td></tr><tr><td><b>Refused</b></td>
+<td class="num zero">0</td><td class="num zero">0</td><td class="num diag">4</td><td class="num zero">0</td>
+<td class="num">4</td></tr><tr><td><b>Inconclusive</b></td>
+<td class="num zero">0</td><td class="num zero">0</td><td class="num zero">0</td><td class="num diag">4</td>
+<td class="num">4</td></tr></table>
+<table><tr><th>Class</th><th class="num">Precision</th><th class="num">Recall</th><th class="num">F1</th><th class="num">Expected</th><th class="num">Reported</th></tr>
+<tr><td>Recursive</td><td class="num">1.00</td><td class="num">1.00</td>
+<td class="num">1.00</td><td class="num">8</td><td class="num">8</td></tr><tr><td>Authoritative-only</td><td class="num">1.00</td><td class="num">1.00</td>
+<td class="num">1.00</td><td class="num">4</td><td class="num">4</td></tr><tr><td>Refused</td><td class="num">1.00</td><td class="num">1.00</td>
+<td class="num">1.00</td><td class="num">4</td><td class="num">4</td></tr><tr><td>Inconclusive</td><td class="num">1.00</td><td class="num">1.00</td>
+<td class="num">1.00</td><td class="num">4</td><td class="num">4</td></tr></table>
+<table><tr><th>Measure</th><th>Value</th><th>Meaning</th></tr>
+<tr><td>Accuracy</td><td>100.0%</td><td>Verdicts equal to the expected label, over all servers</td></tr>
+<tr><td>Accuracy on decided cases</td><td>100.0%</td><td>Correct verdicts among servers where the tool gave a decisive label</td></tr>
+<tr><td>Coverage</td><td>80.0%</td><td>Share of servers the tool decided instead of reporting Inconclusive</td></tr>
+<tr><td>Wrong decisions</td><td>0</td><td>Decisive verdicts that disagree with the expected label (the costly error)</td></tr>
+<tr><td>False exposure / missed exposure</td><td>0 / 0</td><td>Reported Recursive when it should not be / failed to report Recursive when it should</td></tr>
+<tr><td>Correct abstentions</td><td>4</td><td>Inconclusive reported for servers seeded as unusable</td></tr></table>
+
+<h2>4. False and inconclusive result analysis</h2>
+<h3>4.1 False results</h3>
+<div class="box">No false results in this run: all 20 verdicts equal their expected labels. Each false result would be listed here with a likely cause (ACL, caching, forwarder chain, packet loss, rate limiting, upstream failure).</div>
+<h3>4.2 Inconclusive results</h3>
+<table><tr><th>Server</th><th>Software</th><th>Reason</th><th>Likely cause</th><th>Why the tool did not guess</th><th>Seeded as (lab only)</th><th>Expected?</th></tr>
+<tr><td>t17</td><td>unbound</td><td>TIMEOUT</td><td>packet loss, rate limiting or filtering</td><td>No reply to any canary attempt. A silent drop looks the same as packet loss, so the tool does not guess.</td>
+<td>slow</td><td class="ok">yes</td></tr><tr><td>t18</td><td>bind</td><td>TIMEOUT</td><td>packet loss, rate limiting or filtering</td><td>No reply to any canary attempt. A silent drop looks the same as packet loss, so the tool does not guess.</td>
+<td>rate limited</td><td class="ok">yes</td></tr><tr><td>t19</td><td>dnsmasq</td><td>TIMEOUT</td><td>packet loss, rate limiting or filtering</td><td>No reply to any canary attempt. A silent drop looks the same as packet loss, so the tool does not guess.</td>
+<td>silent</td><td class="ok">yes</td></tr><tr><td>t20</td><td>bind</td><td>TIMEOUT</td><td>packet loss, rate limiting or filtering</td><td>No reply to any canary attempt. A silent drop looks the same as packet loss, so the tool does not guess.</td>
+<td>broken upstream</td><td class="ok">yes</td></tr></table>
+
+
+<h2>5. Exposure and remediation</h2>
+<p>RFC 5358 asks operators to offer recursion only to their intended clients. The following servers answered an external client:</p>
+<table><tr><th>Server</th><th>Software</th><th>Suggested change (check the syntax for your version)</th></tr>
+<tr><td>t01 (10.10.0.11)</td><td>bind</td><td><code>allow-recursion { &lt;your clients&gt;; localhost; };  allow-query-cache { &lt;your clients&gt;; localhost; };</code></td></tr><tr><td>t02 (10.10.0.12)</td><td>bind</td><td><code>allow-recursion { &lt;your clients&gt;; localhost; };  allow-query-cache { &lt;your clients&gt;; localhost; };</code></td></tr><tr><td>t03 (10.10.0.13)</td><td>unbound</td><td><code>access-control: 0.0.0.0/0 refuse   then   access-control: &lt;your clients&gt; allow</code></td></tr><tr><td>t04 (10.10.0.14)</td><td>unbound</td><td><code>access-control: 0.0.0.0/0 refuse   then   access-control: &lt;your clients&gt; allow</code></td></tr><tr><td>t05 (10.10.0.15)</td><td>dnsmasq</td><td><code>local-service   (or  interface=&lt;internal interface&gt;  with  bind-interfaces)</code></td></tr><tr><td>t14 (10.10.0.24)</td><td>dnsmasq</td><td><code>local-service   (or  interface=&lt;internal interface&gt;  with  bind-interfaces)</code><br>Its lookups came from 10.10.0.11: that upstream server needs the same restriction.</td></tr><tr><td>t15 (10.10.0.25)</td><td>unbound</td><td><code>access-control: 0.0.0.0/0 refuse   then   access-control: &lt;your clients&gt; allow</code><br>Its lookups came from 10.10.0.13: that upstream server needs the same restriction.</td></tr><tr><td>t16 (10.10.0.26)</td><td>bind</td><td><code>allow-recursion { &lt;your clients&gt;; localhost; };  allow-query-cache { &lt;your clients&gt;; localhost; };</code><br>Its lookups came from 10.10.0.15: that upstream server needs the same restriction.</td></tr></table>
+
+
+<h2>6. Safety and compliance, measured from the evidence</h2>
+<table><tr><th>Check</th><th>Observed</th><th>Limit or rule</th></tr>
+<tr><td>Destinations contacted</td><td>20 (all on the allowlist: yes)</td><td>at most 20 authorised lab servers</td></tr>
+<tr><td>Query types sent</td><td>A</td><td>type A only, never ANY</td></tr>
+<tr><td>Peak rate, all targets together</td><td>3 queries in any second</td><td>5.0 per second plus burst</td></tr>
+<tr><td>Peak rate, one target</td><td>3 queries in any second</td><td>1.0 per second plus burst</td></tr>
+<tr><td>Largest reply / reply-to-query ratio</td><td>251 bytes / 6.28</td><td>1232 bytes / 10.0</td></tr>
+<tr><td>How the run ended</td><td>completed</td><td>safety tripwire and stop file available</td></tr></table>
+<p class="small">The tool has no spoofing option: every query leaves from the probe client's own address. The lab network has no Internet access.</p>
+
+<h2>7. Evidence per server</h2>
+<div class="card"><h3>t01 &middot; 10.10.0.11 &middot; bind &middot; <span style="color:#c0392b">Recursive</span></h3>
+<div class="small">3/3 canary attempts: NOERROR, RA, marker answer, canary log hit (rule R1)</div>
+<table><tr><th>Query</th><th>RD</th><th>Status</th><th>RA</th><th>AA</th><th>Answer</th><th>Canary log</th><th>ms</th></tr>
+<tr><td>baseline : ns.lab.test</td><td class="num">0</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">13.4</td></tr><tr><td>canary 1: rl-a5920c1a57.canary.lab</td><td class="num">1</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>192.0.2.53</td>
+<td>seen from 10.10.0.11</td><td class="num">8.2</td></tr><tr><td>canary 2: rl-356890815c.canary.lab</td><td class="num">1</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>192.0.2.53</td>
+<td>seen from 10.10.0.11</td><td class="num">2.1</td></tr><tr><td>canary 3: rl-67ce440595.canary.lab</td><td class="num">1</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>192.0.2.53</td>
+<td>seen from 10.10.0.11</td><td class="num">4.7</td></tr></table></div><div class="card"><h3>t02 &middot; 10.10.0.12 &middot; bind &middot; <span style="color:#c0392b">Recursive</span></h3>
+<div class="small">3/3 canary attempts: NOERROR, RA, marker answer, canary log hit (rule R1)</div>
+<table><tr><th>Query</th><th>RD</th><th>Status</th><th>RA</th><th>AA</th><th>Answer</th><th>Canary log</th><th>ms</th></tr>
+<tr><td>baseline : ns.lab.test</td><td class="num">0</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">6.4</td></tr><tr><td>canary 1: rl-cac1021e6c.canary.lab</td><td class="num">1</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>192.0.2.53</td>
+<td>seen from 10.10.0.12</td><td class="num">5.0</td></tr><tr><td>canary 2: rl-df48d9212a.canary.lab</td><td class="num">1</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>192.0.2.53</td>
+<td>seen from 10.10.0.12</td><td class="num">3.3</td></tr><tr><td>canary 3: rl-61c62edeef.canary.lab</td><td class="num">1</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>192.0.2.53</td>
+<td>seen from 10.10.0.12</td><td class="num">2.7</td></tr></table></div><div class="card"><h3>t03 &middot; 10.10.0.13 &middot; unbound &middot; <span style="color:#c0392b">Recursive</span></h3>
+<div class="small">3/3 canary attempts: NOERROR, RA, marker answer, canary log hit (rule R1)</div>
+<table><tr><th>Query</th><th>RD</th><th>Status</th><th>RA</th><th>AA</th><th>Answer</th><th>Canary log</th><th>ms</th></tr>
+<tr><td>baseline : ns.lab.test</td><td class="num">0</td><td>NXDOMAIN</td>
+<td class="num">1</td><td class="num">1</td><td>-</td>
+<td>-</td><td class="num">2.4</td></tr><tr><td>canary 1: rl-ed8733bf6d.canary.lab</td><td class="num">1</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>192.0.2.53</td>
+<td>seen from 10.10.0.13</td><td class="num">2.1</td></tr><tr><td>canary 2: rl-5b8798b5a2.canary.lab</td><td class="num">1</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>192.0.2.53</td>
+<td>seen from 10.10.0.13</td><td class="num">2.5</td></tr><tr><td>canary 3: rl-5d7e1d4e50.canary.lab</td><td class="num">1</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>192.0.2.53</td>
+<td>seen from 10.10.0.13</td><td class="num">2.0</td></tr></table></div><div class="card"><h3>t04 &middot; 10.10.0.14 &middot; unbound &middot; <span style="color:#c0392b">Recursive</span></h3>
+<div class="small">3/3 canary attempts: NOERROR, RA, marker answer, canary log hit (rule R1)</div>
+<table><tr><th>Query</th><th>RD</th><th>Status</th><th>RA</th><th>AA</th><th>Answer</th><th>Canary log</th><th>ms</th></tr>
+<tr><td>baseline : ns.lab.test</td><td class="num">0</td><td>NXDOMAIN</td>
+<td class="num">1</td><td class="num">1</td><td>-</td>
+<td>-</td><td class="num">1.6</td></tr><tr><td>canary 1: rl-06eaba7c6a.canary.lab</td><td class="num">1</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>192.0.2.53</td>
+<td>seen from 10.10.0.14</td><td class="num">1.8</td></tr><tr><td>canary 2: rl-17d43e6e9a.canary.lab</td><td class="num">1</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>192.0.2.53</td>
+<td>seen from 10.10.0.14</td><td class="num">4.5</td></tr><tr><td>canary 3: rl-258c213b26.canary.lab</td><td class="num">1</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>192.0.2.53</td>
+<td>seen from 10.10.0.14</td><td class="num">2.1</td></tr></table></div><div class="card"><h3>t05 &middot; 10.10.0.15 &middot; dnsmasq &middot; <span style="color:#c0392b">Recursive</span></h3>
+<div class="small">3/3 canary attempts: NOERROR, RA, marker answer, canary log hit (rule R1)</div>
+<table><tr><th>Query</th><th>RD</th><th>Status</th><th>RA</th><th>AA</th><th>Answer</th><th>Canary log</th><th>ms</th></tr>
+<tr><td>baseline : ns.lab.test</td><td class="num">0</td><td>REFUSED</td>
+<td class="num">1</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">1.6</td></tr><tr><td>canary 1: rl-acbc9ffe86.canary.lab</td><td class="num">1</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">1</td><td>192.0.2.53</td>
+<td>seen from 10.10.0.15</td><td class="num">2.2</td></tr><tr><td>canary 2: rl-6ca65a8687.canary.lab</td><td class="num">1</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">1</td><td>192.0.2.53</td>
+<td>seen from 10.10.0.15</td><td class="num">1.7</td></tr><tr><td>canary 3: rl-4ab4e21376.canary.lab</td><td class="num">1</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">1</td><td>192.0.2.53</td>
+<td>seen from 10.10.0.15</td><td class="num">1.9</td></tr></table></div><div class="card"><h3>t06 &middot; 10.10.0.16 &middot; bind &middot; <span style="color:#0000cc">Refused</span></h3>
+<div class="small">REFUSED for the baseline and 3/3 canary attempts (rule R2)</div>
+<table><tr><th>Query</th><th>RD</th><th>Status</th><th>RA</th><th>AA</th><th>Answer</th><th>Canary log</th><th>ms</th></tr>
+<tr><td>baseline : ns.lab.test</td><td class="num">0</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">2.5</td></tr><tr><td>canary 1: rl-3d5df599fb.canary.lab</td><td class="num">1</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">1.7</td></tr><tr><td>canary 2: rl-6e2d55a5d4.canary.lab</td><td class="num">1</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">1.0</td></tr><tr><td>canary 3: rl-e7e45988d0.canary.lab</td><td class="num">1</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">1.0</td></tr></table></div><div class="card"><h3>t07 &middot; 10.10.0.17 &middot; bind &middot; <span style="color:#0000cc">Refused</span></h3>
+<div class="small">REFUSED for the baseline and 3/3 canary attempts (rule R2)</div>
+<table><tr><th>Query</th><th>RD</th><th>Status</th><th>RA</th><th>AA</th><th>Answer</th><th>Canary log</th><th>ms</th></tr>
+<tr><td>baseline : ns.lab.test</td><td class="num">0</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">1.9</td></tr><tr><td>canary 1: rl-7d11f9b8c1.canary.lab</td><td class="num">1</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">2.7</td></tr><tr><td>canary 2: rl-cc1f5fa6b5.canary.lab</td><td class="num">1</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">1.3</td></tr><tr><td>canary 3: rl-c24965aec3.canary.lab</td><td class="num">1</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">1.6</td></tr></table></div><div class="card"><h3>t08 &middot; 10.10.0.18 &middot; unbound &middot; <span style="color:#0000cc">Refused</span></h3>
+<div class="small">REFUSED for the baseline and 3/3 canary attempts (rule R2)</div>
+<table><tr><th>Query</th><th>RD</th><th>Status</th><th>RA</th><th>AA</th><th>Answer</th><th>Canary log</th><th>ms</th></tr>
+<tr><td>baseline : ns.lab.test</td><td class="num">0</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">0.9</td></tr><tr><td>canary 1: rl-1729c2ec4a.canary.lab</td><td class="num">1</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">0.7</td></tr><tr><td>canary 2: rl-a6d31b6970.canary.lab</td><td class="num">1</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">0.8</td></tr><tr><td>canary 3: rl-95fbd19e9d.canary.lab</td><td class="num">1</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">0.9</td></tr></table></div><div class="card"><h3>t09 &middot; 10.10.0.19 &middot; unbound &middot; <span style="color:#0000cc">Refused</span></h3>
+<div class="small">REFUSED for the baseline and 3/3 canary attempts (rule R2)</div>
+<table><tr><th>Query</th><th>RD</th><th>Status</th><th>RA</th><th>AA</th><th>Answer</th><th>Canary log</th><th>ms</th></tr>
+<tr><td>baseline : ns.lab.test</td><td class="num">0</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">0.9</td></tr><tr><td>canary 1: rl-a0871b0ea6.canary.lab</td><td class="num">1</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">0.8</td></tr><tr><td>canary 2: rl-a1af614d64.canary.lab</td><td class="num">1</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">0.8</td></tr><tr><td>canary 3: rl-ecae9924b8.canary.lab</td><td class="num">1</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">0.9</td></tr></table></div><div class="card"><h3>t10 &middot; 10.10.0.20 &middot; bind &middot; <span style="color:#1b8a4b">Authoritative-only</span></h3>
+<div class="small">baseline answered with AA; 3/3 canary attempts got no answer and no canary hit (rule R3)</div>
+<table><tr><th>Query</th><th>RD</th><th>Status</th><th>RA</th><th>AA</th><th>Answer</th><th>Canary log</th><th>ms</th></tr>
+<tr><td>baseline : ns.lab.test</td><td class="num">0</td><td>NOERROR</td>
+<td class="num">0</td><td class="num">1</td><td>10.10.0.20</td>
+<td>-</td><td class="num">2.0</td></tr><tr><td>canary 1: rl-0c2a1c804f.canary.lab</td><td class="num">1</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">1.1</td></tr><tr><td>canary 2: rl-bbd1865f63.canary.lab</td><td class="num">1</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">3.1</td></tr><tr><td>canary 3: rl-84045dec41.canary.lab</td><td class="num">1</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">1.1</td></tr></table></div><div class="card"><h3>t11 &middot; 10.10.0.21 &middot; bind &middot; <span style="color:#1b8a4b">Authoritative-only</span></h3>
+<div class="small">baseline answered with AA; 3/3 canary attempts got no answer and no canary hit (rule R3)</div>
+<table><tr><th>Query</th><th>RD</th><th>Status</th><th>RA</th><th>AA</th><th>Answer</th><th>Canary log</th><th>ms</th></tr>
+<tr><td>baseline : ns.lab.test</td><td class="num">0</td><td>NOERROR</td>
+<td class="num">0</td><td class="num">1</td><td>10.10.0.21</td>
+<td>-</td><td class="num">2.1</td></tr><tr><td>canary 1: rl-4bc01ea058.canary.lab</td><td class="num">1</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">1.1</td></tr><tr><td>canary 2: rl-658ad9acbf.canary.lab</td><td class="num">1</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">1.4</td></tr><tr><td>canary 3: rl-f491977ca8.canary.lab</td><td class="num">1</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">1.4</td></tr></table></div><div class="card"><h3>t12 &middot; 10.10.0.22 &middot; nsd &middot; <span style="color:#1b8a4b">Authoritative-only</span></h3>
+<div class="small">baseline answered with AA; 3/3 canary attempts got no answer and no canary hit (rule R3)</div>
+<table><tr><th>Query</th><th>RD</th><th>Status</th><th>RA</th><th>AA</th><th>Answer</th><th>Canary log</th><th>ms</th></tr>
+<tr><td>baseline : ns.lab.test</td><td class="num">0</td><td>NOERROR</td>
+<td class="num">0</td><td class="num">1</td><td>10.10.0.22</td>
+<td>-</td><td class="num">1.8</td></tr><tr><td>canary 1: rl-8cc55ae37f.canary.lab</td><td class="num">1</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">1.1</td></tr><tr><td>canary 2: rl-e4d1449394.canary.lab</td><td class="num">1</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">1.5</td></tr><tr><td>canary 3: rl-3f684df3bc.canary.lab</td><td class="num">1</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">3.0</td></tr></table></div><div class="card"><h3>t13 &middot; 10.10.0.23 &middot; nsd &middot; <span style="color:#1b8a4b">Authoritative-only</span></h3>
+<div class="small">baseline answered with AA; 3/3 canary attempts got no answer and no canary hit (rule R3)</div>
+<table><tr><th>Query</th><th>RD</th><th>Status</th><th>RA</th><th>AA</th><th>Answer</th><th>Canary log</th><th>ms</th></tr>
+<tr><td>baseline : ns.lab.test</td><td class="num">0</td><td>NOERROR</td>
+<td class="num">0</td><td class="num">1</td><td>10.10.0.23</td>
+<td>-</td><td class="num">2.2</td></tr><tr><td>canary 1: rl-cfb65a1b8f.canary.lab</td><td class="num">1</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">2.1</td></tr><tr><td>canary 2: rl-ec5d174fde.canary.lab</td><td class="num">1</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">1.1</td></tr><tr><td>canary 3: rl-0931e936a6.canary.lab</td><td class="num">1</td><td>REFUSED</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">1.2</td></tr></table></div><div class="card"><h3>t14 &middot; 10.10.0.24 &middot; dnsmasq &middot; <span style="color:#c0392b">Recursive</span></h3>
+<div class="small">3/3 canary attempts: NOERROR, RA, marker answer, canary log hit (rule R1)</div>
+<table><tr><th>Query</th><th>RD</th><th>Status</th><th>RA</th><th>AA</th><th>Answer</th><th>Canary log</th><th>ms</th></tr>
+<tr><td>baseline : ns.lab.test</td><td class="num">0</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">6.3</td></tr><tr><td>canary 1: rl-446174e04a.canary.lab</td><td class="num">1</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>192.0.2.53</td>
+<td>seen from 10.10.0.11</td><td class="num">3.3</td></tr><tr><td>canary 2: rl-633aee4c69.canary.lab</td><td class="num">1</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>192.0.2.53</td>
+<td>seen from 10.10.0.11</td><td class="num">5.2</td></tr><tr><td>canary 3: rl-85e8be92fb.canary.lab</td><td class="num">1</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>192.0.2.53</td>
+<td>seen from 10.10.0.11</td><td class="num">3.2</td></tr></table></div><div class="card"><h3>t15 &middot; 10.10.0.25 &middot; unbound &middot; <span style="color:#c0392b">Recursive</span></h3>
+<div class="small">3/3 canary attempts: NOERROR, RA, marker answer, canary log hit (rule R1)</div>
+<table><tr><th>Query</th><th>RD</th><th>Status</th><th>RA</th><th>AA</th><th>Answer</th><th>Canary log</th><th>ms</th></tr>
+<tr><td>baseline : ns.lab.test</td><td class="num">0</td><td>NXDOMAIN</td>
+<td class="num">1</td><td class="num">1</td><td>-</td>
+<td>-</td><td class="num">1.8</td></tr><tr><td>canary 1: rl-e6684ce523.canary.lab</td><td class="num">1</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>192.0.2.53</td>
+<td>seen from 10.10.0.13</td><td class="num">2.5</td></tr><tr><td>canary 2: rl-fa77a2c0bf.canary.lab</td><td class="num">1</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>192.0.2.53</td>
+<td>seen from 10.10.0.13</td><td class="num">2.2</td></tr><tr><td>canary 3: rl-0879dac8f1.canary.lab</td><td class="num">1</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>192.0.2.53</td>
+<td>seen from 10.10.0.13</td><td class="num">2.7</td></tr></table></div><div class="card"><h3>t16 &middot; 10.10.0.26 &middot; bind &middot; <span style="color:#c0392b">Recursive</span></h3>
+<div class="small">3/3 canary attempts: NOERROR, RA, marker answer, canary log hit (rule R1)</div>
+<table><tr><th>Query</th><th>RD</th><th>Status</th><th>RA</th><th>AA</th><th>Answer</th><th>Canary log</th><th>ms</th></tr>
+<tr><td>baseline : ns.lab.test</td><td class="num">0</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">4.7</td></tr><tr><td>canary 1: rl-596d39d2e8.canary.lab</td><td class="num">1</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>192.0.2.53</td>
+<td>seen from 10.10.0.15</td><td class="num">3.1</td></tr><tr><td>canary 2: rl-dc85904b62.canary.lab</td><td class="num">1</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>192.0.2.53</td>
+<td>seen from 10.10.0.15</td><td class="num">3.8</td></tr><tr><td>canary 3: rl-339e7d3eef.canary.lab</td><td class="num">1</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>192.0.2.53</td>
+<td>seen from 10.10.0.15</td><td class="num">2.9</td></tr></table></div><div class="card"><h3>t17 &middot; 10.10.0.27 &middot; unbound &middot; <span style="color:#d97706">Inconclusive</span> (TIMEOUT)</h3>
+<div class="small">no reply to any of the 3 canary attempts (rule R4)</div>
+<table><tr><th>Query</th><th>RD</th><th>Status</th><th>RA</th><th>AA</th><th>Answer</th><th>Canary log</th><th>ms</th></tr>
+<tr><td>baseline : ns.lab.test</td><td class="num">0</td><td>TIMEOUT</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">-</td></tr><tr><td>canary 1: rl-40c3f5037d.canary.lab</td><td class="num">1</td><td>TIMEOUT</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">-</td></tr><tr><td>canary 2: rl-f469196b4c.canary.lab</td><td class="num">1</td><td>TIMEOUT</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">-</td></tr><tr><td>canary 3: rl-1a9675a23f.canary.lab</td><td class="num">1</td><td>TIMEOUT</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">-</td></tr></table></div><div class="card"><h3>t18 &middot; 10.10.0.28 &middot; bind &middot; <span style="color:#d97706">Inconclusive</span> (TIMEOUT)</h3>
+<div class="small">no reply to any of the 3 canary attempts (rule R4)</div>
+<table><tr><th>Query</th><th>RD</th><th>Status</th><th>RA</th><th>AA</th><th>Answer</th><th>Canary log</th><th>ms</th></tr>
+<tr><td>baseline : ns.lab.test</td><td class="num">0</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">5.7</td></tr><tr><td>canary 1: rl-4f67414e5b.canary.lab</td><td class="num">1</td><td>TIMEOUT</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">-</td></tr><tr><td>canary 2: rl-06c4c84d20.canary.lab</td><td class="num">1</td><td>TIMEOUT</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">-</td></tr><tr><td>canary 3: rl-e176593efc.canary.lab</td><td class="num">1</td><td>TIMEOUT</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">-</td></tr></table></div><div class="card"><h3>t19 &middot; 10.10.0.29 &middot; dnsmasq &middot; <span style="color:#d97706">Inconclusive</span> (TIMEOUT)</h3>
+<div class="small">no reply to any of the 3 canary attempts (rule R4)</div>
+<table><tr><th>Query</th><th>RD</th><th>Status</th><th>RA</th><th>AA</th><th>Answer</th><th>Canary log</th><th>ms</th></tr>
+<tr><td>baseline : ns.lab.test</td><td class="num">0</td><td>TIMEOUT</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">-</td></tr><tr><td>canary 1: rl-585276b21a.canary.lab</td><td class="num">1</td><td>TIMEOUT</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">-</td></tr><tr><td>canary 2: rl-c92cc9d79e.canary.lab</td><td class="num">1</td><td>TIMEOUT</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">-</td></tr><tr><td>canary 3: rl-73260a5450.canary.lab</td><td class="num">1</td><td>TIMEOUT</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">-</td></tr></table></div><div class="card"><h3>t20 &middot; 10.10.0.30 &middot; bind &middot; <span style="color:#d97706">Inconclusive</span> (TIMEOUT)</h3>
+<div class="small">no reply to any of the 3 canary attempts (rule R4)</div>
+<table><tr><th>Query</th><th>RD</th><th>Status</th><th>RA</th><th>AA</th><th>Answer</th><th>Canary log</th><th>ms</th></tr>
+<tr><td>baseline : ns.lab.test</td><td class="num">0</td><td>NOERROR</td>
+<td class="num">1</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">6.2</td></tr><tr><td>canary 1: rl-427474cc37.canary.lab</td><td class="num">1</td><td>TIMEOUT</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">-</td></tr><tr><td>canary 2: rl-48e4be8280.canary.lab</td><td class="num">1</td><td>TIMEOUT</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">-</td></tr><tr><td>canary 3: rl-4cc623c679.canary.lab</td><td class="num">1</td><td>TIMEOUT</td>
+<td class="num">0</td><td class="num">0</td><td>-</td>
+<td>-</td><td class="num">-</td></tr></table></div>
+
+<h2>8. Reproducibility</h2>
+<table><tr><th>Item</th><th>Value</th></tr>
+<tr><td>Run, seed, tool version</td><td>phase4-a, 1337, 0.2.0</td></tr>
+<tr><td>Config digest (settings and targets file)</td><td><code>a79e23245d905be41ed801a58b2f76ea343f1974bbfe7dcc4078dfdcb49b0a54</code></td></tr>
+<tr><td>Timeout, attempts, EDNS buffer</td><td>2.0 s, 3, 1232 bytes</td></tr>
+<tr><td>Re-run</td><td><code>make probe RUN=&lt;name&gt;</code> then <code>make report RUN=&lt;name&gt;</code>. The same seed and run id give the same canary names, and the verdicts are computed from evidence.jsonl alone.</td></tr></table>
+
+<h2>9. Method: the four rules</h2>
+<p>Each server receives one baseline query (RD off, a name in its own zone) and 3 canary queries (RD on, a fresh unique name each time, in a zone served only by our canary server).
+The canary server logs every query it receives. Rules are checked in order and the first match decides:</p>
+<table><tr><th>Rule</th><th>Verdict</th><th>Condition</th></tr>
+<tr><td>1</td><td>Recursive</td><td>Every canary attempt is NOERROR with RA set, the marker answer, and a hit in the canary log</td></tr>
+<tr><td>2</td><td>Refused</td><td>The baseline and every canary attempt are REFUSED</td></tr>
+<tr><td>3</td><td>Authoritative-only</td><td>The baseline is answered with AA; every canary attempt gets a reply with no answer, no RA and no canary hit</td></tr>
+<tr><td>4</td><td>Inconclusive</td><td>Anything else, with a reason: TIMEOUT, SERVFAIL, TC_FAIL, CONFLICT, ERROR or NO_DATA</td></tr></table>
+</body></html>

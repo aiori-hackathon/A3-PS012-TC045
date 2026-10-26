@@ -1,0 +1,146 @@
+{
+  "compliance": {
+    "all_destinations_on_allowlist": true,
+    "destinations": 20,
+    "limits": {
+      "global_rate": 5.0,
+      "max_ratio": 10.0,
+      "max_reply_bytes": 1232,
+      "per_target_rate": 1.0
+    },
+    "max_queries_per_second_all_targets": 3,
+    "max_queries_per_second_one_target": 3,
+    "max_reply_bytes": 251,
+    "max_reply_to_query_ratio": 6.28,
+    "probes": 80,
+    "query_types": [
+      "A"
+    ],
+    "stop_reason": "completed"
+  },
+  "confusion": {
+    "authoritative_only": {
+      "authoritative_only": 4,
+      "inconclusive": 0,
+      "recursive": 0,
+      "refused": 0
+    },
+    "inconclusive": {
+      "authoritative_only": 0,
+      "inconclusive": 4,
+      "recursive": 0,
+      "refused": 0
+    },
+    "recursive": {
+      "authoritative_only": 0,
+      "inconclusive": 0,
+      "recursive": 8,
+      "refused": 0
+    },
+    "refused": {
+      "authoritative_only": 0,
+      "inconclusive": 0,
+      "recursive": 0,
+      "refused": 4
+    }
+  },
+  "false_results": [],
+  "inconclusive": [
+    {
+      "expected_inconclusive": true,
+      "late_hits": 0,
+      "likely_cause": "packet loss, rate limiting or filtering",
+      "meaning": "No reply to any canary attempt. A silent drop looks the same as packet loss, so the tool does not guess.",
+      "reason": "TIMEOUT",
+      "seeded": "slow",
+      "software": "unbound",
+      "target_id": "t17"
+    },
+    {
+      "expected_inconclusive": true,
+      "late_hits": 0,
+      "likely_cause": "packet loss, rate limiting or filtering",
+      "meaning": "No reply to any canary attempt. A silent drop looks the same as packet loss, so the tool does not guess.",
+      "reason": "TIMEOUT",
+      "seeded": "rate limited",
+      "software": "bind",
+      "target_id": "t18"
+    },
+    {
+      "expected_inconclusive": true,
+      "late_hits": 0,
+      "likely_cause": "packet loss, rate limiting or filtering",
+      "meaning": "No reply to any canary attempt. A silent drop looks the same as packet loss, so the tool does not guess.",
+      "reason": "TIMEOUT",
+      "seeded": "silent",
+      "software": "dnsmasq",
+      "target_id": "t19"
+    },
+    {
+      "expected_inconclusive": true,
+      "late_hits": 0,
+      "likely_cause": "packet loss, rate limiting or filtering",
+      "meaning": "No reply to any canary attempt. A silent drop looks the same as packet loss, so the tool does not guess.",
+      "reason": "TIMEOUT",
+      "seeded": "broken upstream",
+      "software": "bind",
+      "target_id": "t20"
+    }
+  ],
+  "per_class": {
+    "authoritative_only": {
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "reported": 4,
+      "support": 4,
+      "tp": 4
+    },
+    "inconclusive": {
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "reported": 4,
+      "support": 4,
+      "tp": 4
+    },
+    "recursive": {
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "reported": 8,
+      "support": 8,
+      "tp": 8
+    },
+    "refused": {
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "reported": 4,
+      "support": 4,
+      "tp": 4
+    }
+  },
+  "summary": {
+    "abstained_correctly": 4,
+    "abstained_wrongly": 0,
+    "accuracy": 1.0,
+    "accuracy_decided": 1.0,
+    "correct": 20,
+    "coverage": 0.8,
+    "decided": 16,
+    "decided_correct": 16,
+    "false_exposure": 0,
+    "missed_exposure": 0,
+    "total": 20,
+    "wrong_decisions": 0
+  }
+}

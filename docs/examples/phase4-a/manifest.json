@@ -1,0 +1,159 @@
+{
+  "canary": {
+    "ip": "10.10.0.5",
+    "marker_ip": "192.0.2.53",
+    "zone": "canary.lab"
+  },
+  "canary_hits": 24,
+  "config": {
+    "canary_log": "/canary-logs/queries.log",
+    "probe": {
+      "attempts": 3,
+      "canary_wait_s": 2.0,
+      "edns_payload": 1232,
+      "source_address": null,
+      "tcp_retry": true,
+      "timeout_s": 2.0
+    },
+    "rate": {
+      "global": {
+        "burst": 5,
+        "rate": 5.0
+      },
+      "jitter_ms": 50,
+      "per_target": {
+        "burst": 2,
+        "rate": 1.0
+      }
+    },
+    "run": {
+      "output_dir": "results",
+      "seed": 1337
+    },
+    "safety": {
+      "max_ratio": 10.0,
+      "max_reply_bytes": 1232,
+      "max_targets": 20
+    },
+    "targets_file": "lab/targets.yaml"
+  },
+  "config_digest": "a79e23245d905be41ed801a58b2f76ea343f1974bbfe7dcc4078dfdcb49b0a54",
+  "duration_s": 70.8,
+  "finished_utc": "2026-10-26T11:40:43+00:00",
+  "probes": 80,
+  "python": "3.12.3",
+  "run_id": "phase4-a",
+  "seed": 1337,
+  "started_utc": "2026-10-26T11:39:32+00:00",
+  "status": "completed",
+  "status_counts": {
+    "NOERROR": 34,
+    "NXDOMAIN": 3,
+    "REFUSED": 29,
+    "TIMEOUT": 14
+  },
+  "stop_reason": "completed",
+  "targets": [
+    {
+      "id": "t01",
+      "ip": "10.10.0.11",
+      "software": "bind"
+    },
+    {
+      "id": "t02",
+      "ip": "10.10.0.12",
+      "software": "bind"
+    },
+    {
+      "id": "t03",
+      "ip": "10.10.0.13",
+      "software": "unbound"
+    },
+    {
+      "id": "t04",
+      "ip": "10.10.0.14",
+      "software": "unbound"
+    },
+    {
+      "id": "t05",
+      "ip": "10.10.0.15",
+      "software": "dnsmasq"
+    },
+    {
+      "id": "t06",
+      "ip": "10.10.0.16",
+      "software": "bind"
+    },
+    {
+      "id": "t07",
+      "ip": "10.10.0.17",
+      "software": "bind"
+    },
+    {
+      "id": "t08",
+      "ip": "10.10.0.18",
+      "software": "unbound"
+    },
+    {
+      "id": "t09",
+      "ip": "10.10.0.19",
+      "software": "unbound"
+    },
+    {
+      "id": "t10",
+      "ip": "10.10.0.20",
+      "software": "bind"
+    },
+    {
+      "id": "t11",
+      "ip": "10.10.0.21",
+      "software": "bind"
+    },
+    {
+      "id": "t12",
+      "ip": "10.10.0.22",
+      "software": "nsd"
+    },
+    {
+      "id": "t13",
+      "ip": "10.10.0.23",
+      "software": "nsd"
+    },
+    {
+      "id": "t14",
+      "ip": "10.10.0.24",
+      "software": "dnsmasq"
+    },
+    {
+      "id": "t15",
+      "ip": "10.10.0.25",
+      "software": "unbound"
+    },
+    {
+      "id": "t16",
+      "ip": "10.10.0.26",
+      "software": "bind"
+    },
+    {
+      "id": "t17",
+      "ip": "10.10.0.27",
+      "software": "unbound"
+    },
+    {
+      "id": "t18",
+      "ip": "10.10.0.28",
+      "software": "bind"
+    },
+    {
+      "id": "t19",
+      "ip": "10.10.0.29",
+      "software": "dnsmasq"
+    },
+    {
+      "id": "t20",
+      "ip": "10.10.0.30",
+      "software": "bind"
+    }
+  ],
+  "tool_version": "0.2.0"
+}
