@@ -4,7 +4,7 @@ RL_UID := $(shell id -u)
 RL_GID := $(shell id -g)
 export RL_UID RL_GID
 COMPOSE := docker compose -f lab/generated/docker-compose.yml
-.PHONY: help setup test clean lab-gen lab-build lab-up lab-down lab-ps lab-logs lab-check-ext lab-check-ctl lab-check lab-proof probe-dry probe classify
+.PHONY: help setup test clean lab-gen lab-build lab-up lab-down lab-ps lab-logs lab-check-ext lab-check-ctl lab-check lab-proof probe-dry probe classify report assess fault-demo
 help:
 > @echo "make setup        - create .venv and install dependencies"
 > @echo "make test         - run unit tests"
@@ -19,6 +19,9 @@ help:
 > @echo "make probe-dry    - show the probe plan, send nothing"
 > @echo "make probe [RUN=name] - run the probe from the external client against all 20 targets"
 > @echo "make classify RUN=name - classify a run and compare with the expected labels"
+> @echo "make report RUN=name [PDF=1] - write the exposure report (HTML, summary, scores, optional PDF)"
+> @echo "make assess RUN=name [PDF=1] - probe, classify and report in one command"
+> @echo "make fault-demo   - break rl-t18 on purpose and show the false-result analysis"
 setup:
 > python3 -m venv .venv
 > .venv/bin/pip install -e ".[dev]"
@@ -55,3 +58,10 @@ probe:
 > docker exec rl-ext python3 -m resolverlens.cli probe --config config/config.yaml $(if $(RUN),--run-id $(RUN),)
 classify:
 > .venv/bin/python -m resolverlens.cli classify results/$(RUN) --check
+report:
+> .venv/bin/python -m resolverlens.cli report results/$(RUN) $(if $(PDF),--pdf,)
+assess:
+> $(MAKE) probe RUN=$(RUN)
+> $(MAKE) report RUN=$(RUN) PDF=$(PDF)
+fault-demo:
+> bash lab/fault_demo.sh
