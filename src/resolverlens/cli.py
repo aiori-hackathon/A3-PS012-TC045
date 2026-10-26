@@ -4,6 +4,7 @@ import argparse
 from resolverlens import __version__
 from resolverlens.classify import classify_run
 from resolverlens.compare import compare, expected_labels
+from resolverlens.report import build_report
 from resolverlens.runner import run_probe
 
 
@@ -20,13 +21,35 @@ def main(argv=None):
     c.add_argument("run_dir", help="run folder, e.g. results/phase2-first")
     c.add_argument("--targets", help="targets file (default: the one recorded in the run)")
     c.add_argument("--check", action="store_true", help="compare verdicts with the expected labels (exit 1 on any mismatch)")
+    r = sub.add_parser("report", help="classify a run and write report.html, summary.md and scores.json")
+    r.add_argument("run_dir")
+    r.add_argument("--targets", help="targets file (default: the one recorded in the run)")
+    r.add_argument("--pdf", action="store_true", help="also write report.pdf (needs the optional weasyprint package)")
     args = parser.parse_args(argv)
+    if args.command == "report":
+        return _report(args)
     if args.command == "classify":
         return _classify(args)
     if args.command == "probe":
         return run_probe(args.config, only=args.only, dry_run=args.dry_run, run_id=args.run_id)
     parser.print_help()
     return 0
+
+
+def _report(args):
+    try:
+        out = build_report(args.run_dir, args.targets, args.pdf)
+    except (OSError, KeyError, ValueError) as e:
+        print(f"error: {e}")
+        return 2
+    sm = out["summary_numbers"]
+    for k in ("html", "summary", "scores", "pdf"):
+        if k in out:
+            print(f"wrote {out[k]}")
+    if "pdf_error" in out:
+        print(f"PDF not written ({out['pdf_error']}). Open report.html in a browser and print to PDF instead.")
+    print(f"{sm['correct']}/{sm['total']} verdicts match the expected labels; coverage {sm['coverage']:.0%}")
+    return 0 if sm["correct"] == sm["total"] else 1
 
 
 def _classify(args):

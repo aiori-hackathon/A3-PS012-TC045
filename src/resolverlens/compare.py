@@ -11,6 +11,11 @@ def expected_labels(targets_file) -> dict:
     return {t["id"]: t["expected"] for t in data["targets"]}
 
 
+def behaviors(targets_file) -> dict:
+    data = yaml.safe_load(Path(targets_file).read_text())
+    return {t["id"]: t["behavior"] for t in data["targets"]}
+
+
 def compare(verdicts, expected: dict) -> list[dict]:
     rows = []
     for v in verdicts:

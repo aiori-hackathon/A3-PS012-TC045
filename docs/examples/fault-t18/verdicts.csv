@@ -1,0 +1,21 @@
+target_id,ip,software,label,reason,rule,attempts,canary_hits,canary_sources,late_hits,detail
+t01,10.10.0.11,bind,recursive,,R1,NOERROR;NOERROR;NOERROR,3,10.10.0.11,0,"3/3 canary attempts: NOERROR, RA, marker answer, canary log hit"
+t02,10.10.0.12,bind,recursive,,R1,NOERROR;NOERROR;NOERROR,3,10.10.0.12,0,"3/3 canary attempts: NOERROR, RA, marker answer, canary log hit"
+t03,10.10.0.13,unbound,recursive,,R1,NOERROR;NOERROR;NOERROR,3,10.10.0.13,0,"3/3 canary attempts: NOERROR, RA, marker answer, canary log hit"
+t04,10.10.0.14,unbound,recursive,,R1,NOERROR;NOERROR;NOERROR,3,10.10.0.14,0,"3/3 canary attempts: NOERROR, RA, marker answer, canary log hit"
+t05,10.10.0.15,dnsmasq,recursive,,R1,NOERROR;NOERROR;NOERROR,3,10.10.0.15,0,"3/3 canary attempts: NOERROR, RA, marker answer, canary log hit"
+t06,10.10.0.16,bind,refused,,R2,REFUSED;REFUSED;REFUSED,0,,0,REFUSED for the baseline and 3/3 canary attempts
+t07,10.10.0.17,bind,refused,,R2,REFUSED;REFUSED;REFUSED,0,,0,REFUSED for the baseline and 3/3 canary attempts
+t08,10.10.0.18,unbound,refused,,R2,REFUSED;REFUSED;REFUSED,0,,0,REFUSED for the baseline and 3/3 canary attempts
+t09,10.10.0.19,unbound,refused,,R2,REFUSED;REFUSED;REFUSED,0,,0,REFUSED for the baseline and 3/3 canary attempts
+t10,10.10.0.20,bind,authoritative_only,,R3,REFUSED;REFUSED;REFUSED,0,,0,baseline answered with AA; 3/3 canary attempts got no answer and no canary hit
+t11,10.10.0.21,bind,authoritative_only,,R3,REFUSED;REFUSED;REFUSED,0,,0,baseline answered with AA; 3/3 canary attempts got no answer and no canary hit
+t12,10.10.0.22,nsd,authoritative_only,,R3,REFUSED;REFUSED;REFUSED,0,,0,baseline answered with AA; 3/3 canary attempts got no answer and no canary hit
+t13,10.10.0.23,nsd,authoritative_only,,R3,REFUSED;REFUSED;REFUSED,0,,0,baseline answered with AA; 3/3 canary attempts got no answer and no canary hit
+t14,10.10.0.24,dnsmasq,recursive,,R1,NOERROR;NOERROR;NOERROR,3,10.10.0.11,0,"3/3 canary attempts: NOERROR, RA, marker answer, canary log hit"
+t15,10.10.0.25,unbound,recursive,,R1,NOERROR;NOERROR;NOERROR,3,10.10.0.13,0,"3/3 canary attempts: NOERROR, RA, marker answer, canary log hit"
+t16,10.10.0.26,bind,recursive,,R1,NOERROR;NOERROR;NOERROR,3,10.10.0.15,0,"3/3 canary attempts: NOERROR, RA, marker answer, canary log hit"
+t17,10.10.0.27,unbound,inconclusive,TIMEOUT,R4,TIMEOUT;TIMEOUT;TIMEOUT,0,,0,no reply to any of the 3 canary attempts
+t18,10.10.0.28,bind,recursive,,R1,NOERROR;NOERROR;NOERROR,3,10.10.0.28,0,"3/3 canary attempts: NOERROR, RA, marker answer, canary log hit"
+t19,10.10.0.29,dnsmasq,inconclusive,TIMEOUT,R4,TIMEOUT;TIMEOUT;TIMEOUT,0,,0,no reply to any of the 3 canary attempts
+t20,10.10.0.30,bind,inconclusive,TIMEOUT,R4,TIMEOUT;TIMEOUT;TIMEOUT,0,,0,no reply to any of the 3 canary attempts
