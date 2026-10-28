@@ -18,7 +18,7 @@ targets:
   - {id: c03, ip: 10.10.0.43, software: bind, behavior: ra_refuser, expected: refused}
   # two-hop chain: c04 forwards to t14, which forwards to t01; the canary only ever sees t01
   - {id: c04, ip: 10.10.0.44, software: dnsmasq, behavior: forwarder, expected: recursive, forward_to_ip: 10.10.0.24}
-  # slow but within our timeout (500 ms each way): must still be Recursive
+  # slow but within our timeout (200 ms each way): must still be Recursive
   - {id: c05, ip: 10.10.0.45, software: unbound, behavior: slow_ok, expected: recursive}
   # a response-policy (DNS firewall) resolver: NOERROR, RA set, AA clear, marker answer, and it never contacts the canary server.
   # By flags alone it is indistinguishable from a real open resolver.

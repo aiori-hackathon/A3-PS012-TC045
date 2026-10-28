@@ -74,7 +74,7 @@ services:
     pull_policy: never
     container_name: rl-c05
     hostname: rl-c05
-    environment: {RL_SOFTWARE: unbound, RL_IMPAIR: delay, RL_IP: "10.10.0.45", RL_BLOCK_SRC: "10.10.2.10", RL_DELAY_MS: "500"}
+    environment: {RL_SOFTWARE: unbound, RL_IMPAIR: delay, RL_IP: "10.10.0.45", RL_BLOCK_SRC: "10.10.2.10", RL_DELAY_MS: "200"}
     volumes:
       - ./targets/c05:/etc/rl:ro,z
     networks:

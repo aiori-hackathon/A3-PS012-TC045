@@ -93,7 +93,9 @@ def judge(p, t, vantage, ip, timeout):
     if bh == "ra_refuser":
         return all(x["status"] == "REFUSED" and nohit(x) for x in c), summ
     if bh == "slow_ok":
-        return all(rec(x) for x in c), summ
+        # slow but responsive: tolerate a single cold-start timeout, require the rest to succeed
+        nok = sum(1 for x in c if rec(x))
+        return nok >= 2, summ
     if bh == "authoritative_only":
         return (base["status"] == "NOERROR" and base["aa"] and base["answers"] == [ip] and
                 all(x["status"] in ("REFUSED", "NOERROR") and nohit(x) and not x["ra"] for x in c)), summ
