@@ -1,0 +1,171 @@
+{
+  "baselines": [
+    {
+      "correct": 6,
+      "false_exposure": 0,
+      "key": "resolverlens",
+      "missed_exposure": 0,
+      "name": "ResolverLens",
+      "total": 6,
+      "wrong": []
+    },
+    {
+      "correct": 3,
+      "false_exposure": 3,
+      "key": "flag_ra",
+      "missed_exposure": 0,
+      "name": "RA-flag check",
+      "total": 6,
+      "wrong": [
+        "c01",
+        "c02",
+        "c06"
+      ]
+    },
+    {
+      "correct": 5,
+      "false_exposure": 1,
+      "key": "flag_ra_aa",
+      "missed_exposure": 0,
+      "name": "RA + AA check",
+      "total": 6,
+      "wrong": [
+        "c06"
+      ]
+    }
+  ],
+  "compliance": {
+    "all_destinations_on_allowlist": true,
+    "destinations": 6,
+    "limits": {
+      "global_rate": 5.0,
+      "max_ratio": 10.0,
+      "max_reply_bytes": 1232,
+      "per_target_rate": 1.0
+    },
+    "max_queries_per_second_all_targets": 3,
+    "max_queries_per_second_one_target": 3,
+    "max_reply_bytes": 251,
+    "max_reply_to_query_ratio": 6.28,
+    "probes": 24,
+    "query_types": [
+      "A"
+    ],
+    "stop_reason": "completed"
+  },
+  "confusion": {
+    "authoritative_only": {
+      "authoritative_only": 0,
+      "inconclusive": 0,
+      "recursive": 0,
+      "refused": 0
+    },
+    "inconclusive": {
+      "authoritative_only": 0,
+      "inconclusive": 3,
+      "recursive": 0,
+      "refused": 0
+    },
+    "recursive": {
+      "authoritative_only": 0,
+      "inconclusive": 0,
+      "recursive": 2,
+      "refused": 0
+    },
+    "refused": {
+      "authoritative_only": 0,
+      "inconclusive": 0,
+      "recursive": 0,
+      "refused": 1
+    }
+  },
+  "false_results": [],
+  "inconclusive": [
+    {
+      "expected_inconclusive": true,
+      "late_hits": 0,
+      "likely_cause": "mixed evidence",
+      "meaning": "The attempts disagreed or the flags, answer and canary log contradicted each other (caching, a forwarder chain or loss).",
+      "reason": "CONFLICT",
+      "seeded": "liar local answer",
+      "software": "dnsmasq",
+      "target_id": "c01"
+    },
+    {
+      "expected_inconclusive": true,
+      "late_hits": 0,
+      "likely_cause": "mixed evidence",
+      "meaning": "The attempts disagreed or the flags, answer and canary log contradicted each other (caching, a forwarder chain or loss).",
+      "reason": "CONFLICT",
+      "seeded": "wildcard hijacker",
+      "software": "dnsmasq",
+      "target_id": "c02"
+    },
+    {
+      "expected_inconclusive": true,
+      "late_hits": 0,
+      "likely_cause": "mixed evidence",
+      "meaning": "The attempts disagreed or the flags, answer and canary log contradicted each other (caching, a forwarder chain or loss).",
+      "reason": "CONFLICT",
+      "seeded": "sinkhole rewriter",
+      "software": "bind",
+      "target_id": "c06"
+    }
+  ],
+  "per_class": {
+    "authoritative_only": {
+      "f1": null,
+      "fn": 0,
+      "fp": 0,
+      "precision": null,
+      "recall": null,
+      "reported": 0,
+      "support": 0,
+      "tp": 0
+    },
+    "inconclusive": {
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "reported": 3,
+      "support": 3,
+      "tp": 3
+    },
+    "recursive": {
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "reported": 2,
+      "support": 2,
+      "tp": 2
+    },
+    "refused": {
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "reported": 1,
+      "support": 1,
+      "tp": 1
+    }
+  },
+  "summary": {
+    "abstained_correctly": 3,
+    "abstained_wrongly": 0,
+    "accuracy": 1.0,
+    "accuracy_decided": 1.0,
+    "correct": 6,
+    "coverage": 0.5,
+    "decided": 3,
+    "decided_correct": 3,
+    "false_exposure": 0,
+    "missed_exposure": 0,
+    "total": 6,
+    "wrong_decisions": 0
+  }
+}
