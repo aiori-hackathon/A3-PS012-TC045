@@ -1,0 +1,89 @@
+{
+  "canary": {
+    "ip": "10.10.0.5",
+    "marker_ip": "192.0.2.53",
+    "zone": "canary.lab"
+  },
+  "canary_hits": 6,
+  "config": {
+    "canary_log": "/canary-logs/queries.log",
+    "probe": {
+      "attempts": 3,
+      "canary_wait_s": 2.0,
+      "edns_payload": 1232,
+      "source_address": null,
+      "tcp_retry": true,
+      "timeout_s": 2.0
+    },
+    "rate": {
+      "global": {
+        "burst": 5,
+        "rate": 5.0
+      },
+      "jitter_ms": 50,
+      "per_target": {
+        "burst": 2,
+        "rate": 1.0
+      }
+    },
+    "run": {
+      "output_dir": "results",
+      "seed": 1337
+    },
+    "safety": {
+      "max_ratio": 10.0,
+      "max_reply_bytes": 1232,
+      "max_targets": 20
+    },
+    "targets_file": "lab/challenge.yaml"
+  },
+  "config_digest": "dbd4f1b9209fe8c22f412f95f0e6d54283a1c25560a9df971d61348306658f9f",
+  "duration_s": 27.2,
+  "finished_utc": "2026-10-28T08:53:48+00:00",
+  "probes": 24,
+  "python": "3.12.3",
+  "run_id": "chal-a",
+  "seed": 1337,
+  "started_utc": "2026-10-28T08:53:21+00:00",
+  "status": "completed",
+  "status_counts": {
+    "NOERROR": 18,
+    "NXDOMAIN": 1,
+    "REFUSED": 4,
+    "TIMEOUT": 1
+  },
+  "stop_reason": "completed",
+  "targets": [
+    {
+      "id": "c01",
+      "ip": "10.10.0.41",
+      "software": "dnsmasq"
+    },
+    {
+      "id": "c02",
+      "ip": "10.10.0.42",
+      "software": "dnsmasq"
+    },
+    {
+      "id": "c03",
+      "ip": "10.10.0.43",
+      "software": "bind"
+    },
+    {
+      "id": "c04",
+      "ip": "10.10.0.44",
+      "software": "dnsmasq"
+    },
+    {
+      "id": "c05",
+      "ip": "10.10.0.45",
+      "software": "unbound"
+    },
+    {
+      "id": "c06",
+      "ip": "10.10.0.46",
+      "software": "bind"
+    }
+  ],
+  "tool_version": "0.2.0"
+}

@@ -1,0 +1,7 @@
+target_id,ip,software,label,reason,rule,attempts,canary_hits,canary_sources,late_hits,detail
+c01,10.10.0.41,dnsmasq,inconclusive,CONFLICT,R4,NOERROR;NOERROR;NOERROR,0,,0,"the evidence does not agree: canary statuses ['NOERROR', 'NOERROR', 'NOERROR']"
+c02,10.10.0.42,dnsmasq,inconclusive,CONFLICT,R4,NOERROR;NOERROR;NOERROR,0,,0,"the evidence does not agree: canary statuses ['NOERROR', 'NOERROR', 'NOERROR']"
+c03,10.10.0.43,bind,refused,,R2,REFUSED;REFUSED;REFUSED,0,,0,REFUSED for the baseline and 3/3 canary attempts
+c04,10.10.0.44,dnsmasq,recursive,,R1,NOERROR;NOERROR;NOERROR,3,10.10.0.11,0,"3/3 canary attempts: NOERROR, RA, marker answer, canary log hit"
+c05,10.10.0.45,unbound,recursive,,R1,NOERROR;NOERROR;NOERROR,3,10.10.0.45,0,"3/3 canary attempts: NOERROR, RA, marker answer, canary log hit"
+c06,10.10.0.46,bind,inconclusive,CONFLICT,R4,NOERROR;NOERROR;NOERROR,0,,0,"the evidence does not agree: canary statuses ['NOERROR', 'NOERROR', 'NOERROR']"
