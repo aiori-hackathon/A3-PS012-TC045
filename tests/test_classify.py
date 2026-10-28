@@ -121,6 +121,29 @@ def test_missing_evidence_is_no_data():
     assert run(base(), [good(1)])[1] == "NO_DATA"
 
 
+def liar(k, aa=False):
+    return rec("canary", k, "NOERROR", ra=True, aa=aa, answers=[MARKER], hit=False)
+
+
+def test_local_answer_liar_is_a_conflict_not_recursion():
+    assert run(base("TIMEOUT"), [liar(1, True), liar(2, True), liar(3, True)])[:3] == (INCONCLUSIVE, "CONFLICT", "R4")
+
+
+def test_sinkhole_with_aa_clear_is_a_conflict_not_recursion():
+    assert run(base("SERVFAIL"), [liar(1), liar(2), liar(3)])[:2] == (INCONCLUSIVE, "CONFLICT")
+
+
+def test_wildcard_hijacker_that_also_answers_the_baseline_is_a_conflict():
+    b = base("NOERROR", aa=True, answers=[MARKER])
+    assert run(b, [liar(1, True), liar(2, True), liar(3, True)])[1] == "CONFLICT"
+
+
+@pytest.mark.parametrize("ra", [False, True])
+def test_refuser_is_refused_whatever_its_ra_bit(ra):
+    c = [rec("canary", k, "REFUSED", ra=ra) for k in (1, 2, 3)]
+    assert run(base("REFUSED"), c)[:3] == (REFUSED, None, "R2")
+
+
 def make_run(tmp_path, records, targets=None, attempts=3, with_canary=True):
     d = tmp_path / "run"
     d.mkdir()

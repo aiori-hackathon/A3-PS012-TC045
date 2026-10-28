@@ -8,6 +8,7 @@ from jinja2 import Environment
 from markupsafe import Markup
 
 from resolverlens import __version__
+from resolverlens.baseline import evaluate as baseline_eval
 from resolverlens.classify import AUTHORITATIVE_ONLY, INCONCLUSIVE, LABELS, RECURSIVE, REFUSED, classify_run
 from resolverlens.compare import behaviors as seeded_behaviors, compare, expected_labels
 from resolverlens.evidence import read_evidence
@@ -66,6 +67,7 @@ HTML = """<!doctype html><html lang="en"><head><meta charset="utf-8"><title>DNS 
 Every decisive verdict matches the seeded ground truth. {% endif %}
 Accuracy {{ pct(sm.accuracy) }} ({{ sm.correct }}/{{ sm.total }}), accuracy on decided cases {{ pct(sm.accuracy_decided) }}, coverage {{ pct(sm.coverage) }}
 ({{ sm.decided }} of {{ sm.total }} servers decided; {{ sm.abstained_correctly }} correctly reported as Inconclusive).
+On the question "does it provide recursion?", a single RA-flag check gets {{ bl.methods[1].correct }}/{{ sm.total }} right and ResolverLens {{ bl.methods[0].correct }}/{{ sm.total }} (section 10).
 </div>
 {{ bar }}
 <p class="small">How to read the labels. <b>Recursive</b>: the server looked up a name for the external client (proved by our own canary server's log).
@@ -147,6 +149,20 @@ The canary server logs every query it receives. Rules are checked in order and t
 <tr><td>2</td><td>Refused</td><td>The baseline and every canary attempt are REFUSED</td></tr>
 <tr><td>3</td><td>Authoritative-only</td><td>The baseline is answered with AA; every canary attempt gets a reply with no answer, no RA and no canary hit</td></tr>
 <tr><td>4</td><td>Inconclusive</td><td>Anything else, with a reason: TIMEOUT, SERVFAIL, TC_FAIL, CONFLICT, ERROR or NO_DATA</td></tr></table>
+
+<h2>10. Comparison with single-flag checks</h2>
+<p>The same evidence judged by simpler rules, on one question: does the server provide recursion to the external client? A single-flag check reads only the first
+RD=1 reply. That is not enough when a server can set RA and return an answer without ever recursing (a sinkhole, a DNS firewall, a local-data override).
+ResolverLens also requires the canary server's log to show the lookup.</p>
+<table><tr><th>Method</th><th>What it reads</th><th class="num">Correct</th><th class="num">False exposure</th><th class="num">Missed exposure</th><th>Servers called wrongly</th></tr>
+{% for m in bl.methods %}<tr><td><b>{{ m.name }}</b></td><td>{{ m.rule }}</td><td class="num">{{ m.correct }}/{{ m.total }}</td><td class="num">{{ m.false_exposure }}</td>
+<td class="num">{{ m.missed_exposure }}</td><td>{{ m.wrong|join(", ") or "none" }}</td></tr>{% endfor %}</table>
+{% if bl.differences %}<table><tr><th>Server</th><th>Seeded as (lab only)</th><th>Truly recursive?</th><th>ResolverLens</th><th>RA-flag check</th><th>RA + AA check</th></tr>
+{% for r in bl.differences %}<tr><td>{{ r.target_id }}</td><td>{{ r.seeded }}</td><td>{{ "yes" if r.truth else "no" }}</td>
+<td class="{{ 'ok' if r.resolverlens == r.truth else 'bad' }}">{{ "recursive" if r.resolverlens else "not recursive" }}</td>
+<td class="{{ 'ok' if r.flag_ra == r.truth else 'bad' }}">{{ "recursive" if r.flag_ra else "not recursive" }}</td>
+<td class="{{ 'ok' if r.flag_ra_aa == r.truth else 'bad' }}">{{ "recursive" if r.flag_ra_aa else "not recursive" }}</td></tr>{% endfor %}</table>
+{% else %}<div class="box">All three methods give the same answer for every server in this run. They differ only on deceptive servers, which the challenge set contains (docs/challenge.md).</div>{% endif %}
 </body></html>"""
 
 
@@ -177,18 +193,20 @@ def build_report(run_dir, targets_file=None, pdf=False) -> dict:
     cards = [{"target_id": v.target_id, "ip": v.ip, "software": v.software, "label": v.label, "reason": v.reason,
               "rule": v.rule, "detail": v.detail, "records": by_t.get(v.target_id, [])} for v in verdicts]
     counts = {lab: sum(1 for r in rows if r["label"] == lab) for lab in LABELS}
+    bl = baseline_eval(verdicts, by_t, expected, seeded_behaviors(tf))
     env = Environment(autoescape=True)
     html = env.from_string(HTML).render(
         css=Markup(CSS), version=__version__, run=_Obj(manifest), sm=_Obj(sm), rows=[_Obj(r) for r in rows], exposed=[_Obj(r) for r in exposed],
         matrix=matrix, pc={k: _Obj(v) for k, v in pc.items()}, classes=LABELS, faults=[_Obj(f) for f in faults],
         inc=[_Obj(i) for i in inconclusive_table(verdicts, expected, seeded_behaviors(tf))], remedy=REMEDIATION, comp=_Obj(comp),
-        cards=[_Obj(c) for c in cards], text=LABEL_TEXT, colour=COLOUR, bar=bar_svg(counts, len(rows)), pct=_pct, num=_num)
+        cards=[_Obj(c) for c in cards], bl=_Obj({"methods": [_Obj(m) for m in bl["methods"]], "differences": [_Obj(r) for r in bl["differences"]]}), text=LABEL_TEXT, colour=COLOUR, bar=bar_svg(counts, len(rows)), pct=_pct, num=_num)
     out = {"html": run_dir / "report.html", "summary": run_dir / "summary.md", "scores": run_dir / "scores.json"}
     out["html"].write_text(html)
     out["scores"].write_text(json.dumps({"summary": sm, "confusion": matrix, "per_class": pc, "compliance": comp,
                                          "false_results": [{k: f[k] for k in ("target_id", "expected", "label")} | {"cause": f["cause"]} for f in faults],
-                                         "inconclusive": inconclusive_table(verdicts, expected, seeded_behaviors(tf))}, indent=2, sort_keys=True) + "\n")
-    out["summary"].write_text(_markdown(manifest, rows, matrix, sm, exposed))
+                                         "inconclusive": inconclusive_table(verdicts, expected, seeded_behaviors(tf)),
+                                         "baselines": [{k: m[k] for k in ("key", "name", "correct", "total", "false_exposure", "missed_exposure", "wrong")} for m in bl["methods"]]}, indent=2, sort_keys=True) + "\n")
+    out["summary"].write_text(_markdown(manifest, rows, matrix, sm, exposed, bl))
     if pdf:
         try:
             import weasyprint
@@ -210,7 +228,7 @@ class _Obj(dict):
         return _Obj(v) if isinstance(v, dict) and not isinstance(v, _Obj) else v
 
 
-def _markdown(manifest, rows, matrix, sm, exposed) -> str:
+def _markdown(manifest, rows, matrix, sm, exposed, bl) -> str:
     L = [f"# Assessment summary: run {manifest['run_id']}", "",
          f"- Servers assessed: **{sm['total']}**; providing recursion to the external client: **{len(exposed)}** ({', '.join(r['target_id'] for r in exposed) or 'none'})",
          f"- Accuracy {_pct(sm['accuracy'])} ({sm['correct']}/{sm['total']}); accuracy on decided cases {_pct(sm['accuracy_decided'])}; coverage {_pct(sm['coverage'])}",
@@ -219,6 +237,10 @@ def _markdown(manifest, rows, matrix, sm, exposed) -> str:
          "| Expected \\ Reported | " + " | ".join(LABEL_TEXT[c] for c in LABELS) + " |", "|---|" + "---|" * len(LABELS)]
     for e in LABELS:
         L.append(f"| {LABEL_TEXT[e]} | " + " | ".join(str(matrix[e][c]) for c in LABELS) + " |")
+    L += ["", "## Comparison with single-flag checks (does the server provide recursion?)", "",
+          "| Method | Correct | False exposure | Missed exposure | Called wrongly |", "|---|---|---|---|---|"]
+    for m in bl["methods"]:
+        L.append(f"| {m['name']} | {m['correct']}/{m['total']} | {m['false_exposure']} | {m['missed_exposure']} | {', '.join(m['wrong']) or 'none'} |")
     L += ["", "## Verdicts", "", "| Server | Software | Verdict | Reason | Expected | Match |", "|---|---|---|---|---|---|"]
     for r in rows:
         L.append(f"| {r['target_id']} | {r['software']} | {LABEL_TEXT[r['label']]} | {r['reason'] or '-'} | {LABEL_TEXT[r['expected']]} | {'yes' if r['match'] else 'NO'} |")
