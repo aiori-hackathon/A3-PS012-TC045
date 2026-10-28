@@ -24,7 +24,7 @@ BEHAVIOR_EXPECTED = {
     "ra_refuser": "refused", "slow_ok": "recursive", "sinkhole_rewriter": "inconclusive",
 }
 IMPAIR = {"slow": "delay", "slow_ok": "delay", "rate_limited": "ratelimit", "silent": "silent"}
-DELAY_MS = {"slow": 3000, "slow_ok": 500}
+DELAY_MS = {"slow": 3000, "slow_ok": 200}
 SOFTWARE = {"bind", "unbound", "dnsmasq", "nsd"}
 MAX_TARGETS = 20
 

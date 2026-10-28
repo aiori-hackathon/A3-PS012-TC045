@@ -34,7 +34,7 @@ def test_challenge_profile_attaches_to_the_existing_network(tmp_path):
     assert d["name"] == "rlc" and d["networks"]["rl-lab"] == {"name": "rl-lab", "external": True}
     assert sorted(d["services"]) == [f"rl-c0{i}" for i in range(1, 7)]
     assert "rl-canary" not in d["services"] and "depends_on" not in d["services"]["rl-c01"]
-    assert d["services"]["rl-c05"]["environment"]["RL_DELAY_MS"] == "500" and "NET_ADMIN" in d["services"]["rl-c05"]["cap_add"]
+    assert d["services"]["rl-c05"]["environment"]["RL_DELAY_MS"] == "200" and "NET_ADMIN" in d["services"]["rl-c05"]["cap_add"]
 
 
 def test_sinkhole_gets_a_response_policy_zone_and_no_recursion_path(tmp_path):
