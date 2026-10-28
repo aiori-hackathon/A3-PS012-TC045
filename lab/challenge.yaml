@@ -1,0 +1,25 @@
+# Challenge profile: servers built to fool a single-flag check. Joins the main lab network (run `make lab-up` first).
+# Same file format as lab/targets.yaml. The tool never reads the expected labels; only the scoring does.
+lab:
+  network: rl-lab
+  subnet: 10.10.0.0/16
+  baseline_zone: lab.test
+  trusted_range: 10.10.1.0/24
+  canary: {name: rl-canary, ip: 10.10.0.5, zone: canary.lab, marker_ip: 192.0.2.53}
+  clients:
+    external: {name: rl-ext, ip: 10.10.2.10}
+    control: {name: rl-ctl, ip: 10.10.1.10}
+targets:
+  # sets RA=1 and returns the marker for names under canary.lab from local data, never contacting the canary server
+  - {id: c01, ip: 10.10.0.41, software: dnsmasq, behavior: liar_local_answer, expected: inconclusive}
+  # answers every name, including the baseline, with the marker address, never recursing
+  - {id: c02, ip: 10.10.0.42, software: dnsmasq, behavior: wildcard_hijacker, expected: inconclusive}
+  # recursion is configured on but denied to everyone: replies REFUSED
+  - {id: c03, ip: 10.10.0.43, software: bind, behavior: ra_refuser, expected: refused}
+  # two-hop chain: c04 forwards to t14, which forwards to t01; the canary only ever sees t01
+  - {id: c04, ip: 10.10.0.44, software: dnsmasq, behavior: forwarder, expected: recursive, forward_to_ip: 10.10.0.24}
+  # slow but within our timeout (500 ms each way): must still be Recursive
+  - {id: c05, ip: 10.10.0.45, software: unbound, behavior: slow_ok, expected: recursive}
+  # a response-policy (DNS firewall) resolver: NOERROR, RA set, AA clear, marker answer, and it never contacts the canary server.
+  # By flags alone it is indistinguishable from a real open resolver.
+  - {id: c06, ip: 10.10.0.46, software: bind, behavior: sinkhole_rewriter, expected: inconclusive}
