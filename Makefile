@@ -4,7 +4,7 @@ RL_UID := $(shell id -u)
 RL_GID := $(shell id -g)
 export RL_UID RL_GID
 COMPOSE := docker compose -f lab/generated/docker-compose.yml
-.PHONY: help setup test clean lab-gen lab-build lab-up lab-down lab-ps lab-logs lab-check-ext lab-check-ctl lab-check lab-proof probe-dry probe classify report assess fault-demo
+.PHONY: help setup test clean lab-gen lab-build lab-up lab-down lab-ps lab-logs lab-check-ext lab-check-ctl lab-check lab-proof probe-dry probe classify report assess fault-demo challenge-gen challenge-up challenge-down challenge-check challenge
 help:
 > @echo "make setup        - create .venv and install dependencies"
 > @echo "make test         - run unit tests"
@@ -22,6 +22,7 @@ help:
 > @echo "make report RUN=name [PDF=1] - write the exposure report (HTML, summary, scores, optional PDF)"
 > @echo "make assess RUN=name [PDF=1] - probe, classify and report in one command"
 > @echo "make fault-demo   - break rl-t18 on purpose and show the false-result analysis"
+> @echo "make challenge-up | challenge-check | challenge RUN=name [PDF=1] | challenge-down - the deceptive-server challenge set"
 setup:
 > python3 -m venv .venv
 > .venv/bin/pip install -e ".[dev]"
@@ -65,3 +66,17 @@ assess:
 > $(MAKE) report RUN=$(RUN) PDF=$(PDF)
 fault-demo:
 > bash lab/fault_demo.sh
+CCOMPOSE := docker compose -f lab/generated-challenge/docker-compose.yml
+challenge-gen:
+> .venv/bin/python lab/generate.py --attach --targets lab/challenge.yaml --out lab/generated-challenge
+challenge-up:
+> $(CCOMPOSE) up -d
+> @echo "waiting 12 s for health checks..."; sleep 12
+> @$(CCOMPOSE) ps --format 'table {{.Name}}\t{{.Status}}'
+challenge-down:
+> $(CCOMPOSE) down
+challenge-check:
+> docker exec rl-ext python3 /work/lab/verify.py --targets /work/lab/challenge.yaml --vantage external
+challenge:
+> docker exec rl-ext python3 -m resolverlens.cli probe --config config/config.challenge.yaml --run-id $(RUN)
+> .venv/bin/python -m resolverlens.cli report results/$(RUN) $(if $(PDF),--pdf,)

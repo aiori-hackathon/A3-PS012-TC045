@@ -87,6 +87,13 @@ def judge(p, t, vantage, ip, timeout):
         if vantage == "external":
             return base["status"] == "REFUSED" and all(x["status"] == "REFUSED" and nohit(x) for x in c), summ
         return all(rec(x) for x in c), summ
+    if bh in ("liar_local_answer", "wildcard_hijacker", "sinkhole_rewriter"):
+        # answers with RA set and the marker, yet the canary log never shows a lookup
+        return all(x["status"] == "NOERROR" and x["ra"] and x["marker"] and not x["hit"] for x in c), summ
+    if bh == "ra_refuser":
+        return all(x["status"] == "REFUSED" and nohit(x) for x in c), summ
+    if bh == "slow_ok":
+        return all(rec(x) for x in c), summ
     if bh == "authoritative_only":
         return (base["status"] == "NOERROR" and base["aa"] and base["answers"] == [ip] and
                 all(x["status"] in ("REFUSED", "NOERROR") and nohit(x) and not x["ra"] for x in c)), summ
