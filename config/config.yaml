@@ -19,3 +19,5 @@ safety:
   max_targets: 20
   max_reply_bytes: 1232               # stop the run if any reply is bigger
   max_ratio: 10.0                     # stop if reply size / query size is bigger
+preflight:
+  reference_target: t01               # a server that must provide recursion; used for the canary round-trip self-test

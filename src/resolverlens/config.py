@@ -42,6 +42,7 @@ class Config:
     max_targets: int
     max_reply_bytes: int
     max_ratio: float
+    reference_target: str
     raw: dict
 
 
@@ -89,6 +90,7 @@ def load_config(path: str | Path) -> Config:
         max_targets=_get(safety, "max_targets", 1, HARD_MAX_TARGETS, int),
         max_reply_bytes=_get(safety, "max_reply_bytes", 512, 4096, int),
         max_ratio=_get(safety, "max_ratio", 1.0, 100.0),
+        reference_target=str((raw.get("preflight") or {}).get("reference_target", "t01")),
         raw=raw,
     )
     return cfg

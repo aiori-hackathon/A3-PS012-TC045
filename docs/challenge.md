@@ -25,9 +25,10 @@ Each assessment run covers at most 20 servers: the main lab is one run (20), the
 | RA-flag check | First RD=1 reply is NOERROR with RA set (what Nmap's `dns-recursion` script reads) |
 | RA + AA check | The same, plus AA clear and an answer |
 
-Result in the sandbox (same server software, no `tc netem`): ResolverLens 6/6, RA + AA check 5/6 (fooled by c06),
-RA-flag check 3/6 (fooled by c01, c02 and c06). On the 20-server main lab all three methods are expected to agree.
-The Docker numbers are recorded in `docs/phase-5.md`.
+Result in Docker (`docs/phase-5.md`). Challenge set: ResolverLens 6/6, RA + AA check 5/6 (fooled by c06), RA-flag check 3/6
+(fooled by c01, c02 and c06). Main lab: ResolverLens 20/20, RA-flag check 20/20, RA + AA check 19/20. The RA + AA check missed t05,
+a genuine open resolver (dnsmasq): its reply carried AA, because dnsmasq passed through the AA flag of the authoritative canary
+server it had just asked. Flags mislead in both directions; the canary log does not depend on them.
 
 The liars c01 and c02 also give themselves away through the AA flag. The c06 sinkhole does not: only the canary log
 shows that it never looked anything up.

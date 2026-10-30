@@ -1,6 +1,7 @@
 """Evidence files: evidence.jsonl (one record per probe), audit.log and manifest.json."""
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -34,3 +35,11 @@ def read_evidence(path: str | Path):
         for line in f:
             if line.strip():
                 yield json.loads(line)
+
+
+def sha256_file(path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 16), b""):
+            h.update(chunk)
+    return h.hexdigest()

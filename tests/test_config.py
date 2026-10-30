@@ -50,3 +50,9 @@ def test_digest_changes_with_config_and_targets(lab_files):
     a = config_digest(cfg, "x")
     assert a == config_digest(cfg, "x")
     assert a != config_digest(cfg, "y")
+
+
+def test_reference_target_defaults_to_t01_and_can_be_set(lab_files):
+    assert load_config(lab_files["config"]).reference_target == "t01"
+    _edit(lab_files["config"], lambda d: d.update(preflight={"reference_target": "t06"}))
+    assert load_config(lab_files["config"]).reference_target == "t06"

@@ -11,20 +11,20 @@ from pathlib import Path
 from resolverlens import __version__
 from resolverlens.canary import CanaryLog
 from resolverlens.config import ConfigError, config_digest, load_config
-from resolverlens.evidence import EvidenceWriter, write_manifest
+from resolverlens.evidence import EvidenceWriter, sha256_file, write_manifest
 from resolverlens.names import canary_name
 from resolverlens.probe import Prober, SafetyStop
 from resolverlens.ratelimit import RateController
 from resolverlens.scope import ScopeError, ScopeGuard, load_lab
 
-EXIT_OK, EXIT_CONFIG, EXIT_SAFETY, EXIT_INTERRUPTED = 0, 2, 3, 130
+EXIT_OK, EXIT_CONFIG, EXIT_SAFETY, EXIT_PREFLIGHT, EXIT_INTERRUPTED = 0, 2, 3, 4, 130
 
 
 def _utc() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
-def run_probe(config_path, only=None, dry_run=False, run_id=None, out=print, transport=None) -> int:
+def run_probe(config_path, only=None, dry_run=False, run_id=None, out=print, transport=None, preflight=False) -> int:
     try:
         cfg = load_config(config_path)
         lab, targets = load_lab(cfg.targets_file)
@@ -54,6 +54,11 @@ def run_probe(config_path, only=None, dry_run=False, run_id=None, out=print, tra
                                                 for k in range(1, cfg.attempts + 1)) if targets else "no targets")
         return EXIT_OK
 
+    if preflight:
+        from resolverlens.preflight import run_preflight
+        if not run_preflight(config_path, out=out, **({} if transport is None else {"transport": transport})):
+            out("preflight failed: nothing was assessed. Fix the failing check, or use --no-preflight to skip it.")
+            return EXIT_PREFLIGHT
     root = Path(cfg.output_dir)
     run_dir = root / run_id
     if run_dir.exists():
@@ -91,6 +96,7 @@ def run_probe(config_path, only=None, dry_run=False, run_id=None, out=print, tra
         code, reason = EXIT_INTERRUPTED, "interrupted by user"
     finally:
         writer.close()
+        manifest["files"] = {n: sha256_file(run_dir / n) for n in ("evidence.jsonl", "audit.log")}
         manifest.update({"status": "completed" if code == EXIT_OK else "stopped", "stop_reason": reason,
                          "finished_utc": _utc(), "duration_s": round(time.monotonic() - t_start, 1),
                          "probes": prober.seq, "status_counts": dict(counts), "canary_hits": hits})
