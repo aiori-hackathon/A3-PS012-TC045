@@ -4,7 +4,7 @@ RL_UID := $(shell id -u)
 RL_GID := $(shell id -g)
 export RL_UID RL_GID
 COMPOSE := docker compose -f lab/generated/docker-compose.yml
-.PHONY: help setup test clean lab-gen lab-build lab-up lab-down lab-ps lab-logs lab-check-ext lab-check-ctl lab-check lab-proof probe-dry probe classify report assess fault-demo challenge-gen challenge-up challenge-down challenge-check challenge
+.PHONY: help setup test clean lab-gen lab-build lab-up lab-down lab-ps lab-logs lab-check-ext lab-check-ctl lab-check lab-proof probe-dry probe classify report assess fault-demo challenge-gen challenge-up challenge-down challenge-check challenge preflight replay stability repeat
 help:
 > @echo "make setup        - create .venv and install dependencies"
 > @echo "make test         - run unit tests"
@@ -22,6 +22,9 @@ help:
 > @echo "make report RUN=name [PDF=1] - write the exposure report (HTML, summary, scores, optional PDF)"
 > @echo "make assess RUN=name [PDF=1] - probe, classify and report in one command"
 > @echo "make fault-demo   - break rl-t18 on purpose and show the false-result analysis"
+> @echo "make preflight       - self-test before a run (config, allowlist, disk, canary round trip)"
+> @echo "make replay RUN=name - check a stored run is intact and its verdicts reproduce"
+> @echo "make stability RUNS='a b' | make repeat PREFIX=stab N=3 - compare repeated runs"
 > @echo "make challenge-up | challenge-check | challenge RUN=name [PDF=1] | challenge-down - the deceptive-server challenge set"
 setup:
 > python3 -m venv .venv
@@ -80,3 +83,12 @@ challenge-check:
 challenge:
 > docker exec rl-ext python3 -m resolverlens.cli probe --config config/config.challenge.yaml --run-id $(RUN)
 > .venv/bin/python -m resolverlens.cli report results/$(RUN) $(if $(PDF),--pdf,)
+preflight:
+> docker exec rl-ext python3 -m resolverlens.cli preflight --config config/config.yaml
+replay:
+> .venv/bin/python -m resolverlens.cli replay results/$(RUN)
+stability:
+> .venv/bin/python -m resolverlens.cli stability $(foreach r,$(RUNS),results/$(r))
+repeat:
+> @for i in $$(seq 1 $(N)); do $(MAKE) --no-print-directory probe RUN=$(PREFIX)-$$i || exit 1; done
+> @$(MAKE) --no-print-directory stability RUNS="$$(seq -f '$(PREFIX)-%g' 1 $(N) | tr '\n' ' ')"
