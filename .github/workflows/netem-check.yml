@@ -1,0 +1,25 @@
+# Feasibility check for a hosted demo: does GitHub's runner support what the lab needs (tc netem and iptables inside containers)?
+# Run it by hand: Actions tab, "netem check", Run workflow. It does not run on push.
+name: netem check
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  netem:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kernel and Docker versions
+        run: |
+          uname -r
+          docker --version
+          docker compose version
+      - name: Is sch_netem available on the host kernel?
+        run: |
+          if sudo modprobe sch_netem; then echo "sch_netem loaded"; else echo "sch_netem NOT available"; fi
+          lsmod | grep netem || true
+      - name: tc netem inside a container
+        run: |
+          docker run --rm --cap-add NET_ADMIN ubuntu:24.04 bash -c "apt-get update -qq && apt-get install -y -qq iproute2 >/dev/null && tc qdisc add dev eth0 root netem delay 200ms && tc qdisc show dev eth0 && echo NETEM_OK"
+      - name: iptables limit inside a container
+        run: |
+          docker run --rm --cap-add NET_ADMIN ubuntu:24.04 bash -c "apt-get update -qq && apt-get install -y -qq iptables >/dev/null && iptables -A INPUT -p udp --dport 53 -m limit --limit 1/minute --limit-burst 1 -j ACCEPT && iptables -S INPUT && echo IPTABLES_OK"
