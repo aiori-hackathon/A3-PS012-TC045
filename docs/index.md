@@ -3,6 +3,7 @@
 | File | What it covers |
 |---|---|
 | `pseudocode.md` | The tool's core logic and algorithms in pseudocode |
+| `live-demo.md` | Guide for evaluators: viewing results on GitHub, triggering runs, and downloading artifacts |
 | `conventions.md` | Names, addresses, git and safety conventions |
 | `lab.md` | The lab: 23 containers, the 20 seeded targets, how each behaves |
 | `tool.md` | The probe: modules, evidence files, commands, safety behaviour |

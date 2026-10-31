@@ -84,7 +84,7 @@ The lab runs on a Docker network with no Internet access and publishes no ports.
 The **Live demo** workflow builds the lab from a clean checkout on a GitHub runner, assesses both server sets, replays the evidence and shows the results on the run page:
 [Actions, Live demo](https://github.com/aiori-hackathon/A3-PS012-TC045/actions/workflows/demo.yml). Open a finished run for the summary tables, or use "Run workflow". Reports and evidence are downloadable as the artifact `demo-results`.
 
-Recorded run evidence: [`docs/phase-7.md`](docs/phase-7.md)
+Recorded run evidence: [`docs/phase-7.md`](docs/phase-7.md) · Evaluator guide: [`docs/live-demo.md`](docs/live-demo.md)
 
 ## Repository map
 
