@@ -12,6 +12,6 @@
 | `challenge.md` | The six deceptive servers, the single-flag comparison, the limits |
 | `hardening.md` | Preflight, replay, stability |
 | `safety-tests.md` | Dry run, stop file and tripwire tested in Docker |
-| `phase-0.md` to `phase-6.md` | Evidence recorded as each phase was finished |
+| `phase-0.md` to `phase-7.md` | Evidence recorded as each phase was finished |
 | `examples/` | Real runs: evidence, verdicts, reports (HTML and PDF) |
 | `README-level1.md` | The Level 1 README, as originally submitted |
