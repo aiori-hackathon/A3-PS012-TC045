@@ -84,7 +84,8 @@ The lab runs on a Docker network with no Internet access and publishes no ports.
 The **Live demo** workflow builds the lab from a clean checkout on a GitHub runner, assesses both server sets, replays the evidence and shows the results on the run page:
 [Actions, Live demo](https://github.com/aiori-hackathon/A3-PS012-TC045/actions/workflows/demo.yml). Open a finished run for the summary tables, or use "Run workflow". Reports and evidence are downloadable as the artifact `demo-results`.
 
-Demo video: https://www.youtube.com/watch?v=YOUR_DEMO_VIDEO_ID
+Recorded run evidence: [`docs/phase-7.md`](docs/phase-7.md) · Walkthrough script: [`docs/mentor-demo.md`](docs/mentor-demo.md)
+<!-- Demo video: https://www.youtube.com/watch?v=YOUR_DEMO_VIDEO_ID -->
 
 ## Repository map
 
@@ -106,7 +107,7 @@ Demo video: https://www.youtube.com/watch?v=YOUR_DEMO_VIDEO_ID
 | Dinesh Babu R S | Lab, challenge servers, scoring and report, CI |
 | Dr. Gokulapriya R (faculty) | Guidance and review |
 
-The work was done in phases, on branches, and each phase was reviewed and merged by the other student (see the git history and tags `v0.0` to `v0.6`).
+The work was done in phases, on branches, and each phase was reviewed and merged by the other student (see the git history and tags `v0.0-phase0` to `v0.7-phase7`).
 
 ## Limits
 
