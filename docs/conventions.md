@@ -18,8 +18,7 @@ t01-t05 open recursive, t06-t09 policy-refusing, t10-t13 authoritative-only,
 t14-t16 forwarders, t17-t18 slow or rate-limited, t19-t20 broken or silent.
 
 ## Git
-- One clone at ~/work/A3-PS012-TC045. Run `git-as aditya` or `git-as dinesh` before committing.
-- Run `git-as status` to confirm who the next commit will be made as.
+- Pair programming: commits alternate between Aditya and Dinesh using their respective git identities.
 - Branches: <author>/phase-N-name. Merge to main with --no-ff, then tag (v0.N-phaseN).
 - Commit style: feat(lab): ..., fix(probe): ..., docs: ..., test: ..., chore: ...
 - Pairing: add a "Co-authored-by: Name <email>" line to the commit message.

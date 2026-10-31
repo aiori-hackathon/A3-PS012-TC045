@@ -80,7 +80,7 @@ In development for AIORI Hackathon 3. Planned timeline:
 
 ## Documents
 
-- Presentation: `A3-PS012-TC045_Presentation.pdf` (add the file to this repository)
+- Presentation: `A3-PS012-TC045_Presentation.pdf`
 - Problem statement: PS-12, Authorised DNS Resolver Exposure Assessment
 
 ## Team
