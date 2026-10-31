@@ -3,8 +3,9 @@ SHELL := /bin/bash
 RL_UID := $(shell id -u)
 RL_GID := $(shell id -g)
 export RL_UID RL_GID
+STAMP := $(shell date +%m%d-%H%M)
 COMPOSE := docker compose -f lab/generated/docker-compose.yml
-.PHONY: help setup test clean lab-gen lab-build lab-up lab-down lab-ps lab-logs lab-check-ext lab-check-ctl lab-check lab-proof probe-dry probe classify report assess fault-demo challenge-gen challenge-up challenge-down challenge-check challenge preflight replay stability repeat
+.PHONY: help setup test clean lab-gen lab-build lab-up lab-down lab-ps lab-logs lab-check-ext lab-check-ctl lab-check lab-proof probe-dry probe classify report assess fault-demo challenge-gen challenge-up challenge-down challenge-check challenge preflight replay stability repeat bootstrap demo demo-down
 help:
 > @echo "make setup        - create .venv and install dependencies"
 > @echo "make test         - run unit tests"
@@ -21,6 +22,9 @@ help:
 > @echo "make classify RUN=name - classify a run and compare with the expected labels"
 > @echo "make report RUN=name [PDF=1] - write the exposure report (HTML, summary, scores, optional PDF)"
 > @echo "make assess RUN=name [PDF=1] - probe, classify and report in one command"
+> @echo "make bootstrap      - first time only: create .venv and build the Docker images"
+> @echo "make demo           - one command: start the lab, check it, assess both sets, write reports, replay"
+> @echo "make demo-down      - stop everything"
 > @echo "make fault-demo   - break rl-t18 on purpose and show the false-result analysis"
 > @echo "make preflight       - self-test before a run (config, allowlist, disk, canary round trip)"
 > @echo "make replay RUN=name - check a stored run is intact and its verdicts reproduce"
@@ -92,3 +96,16 @@ stability:
 repeat:
 > @for i in $$(seq 1 $(N)); do $(MAKE) --no-print-directory probe RUN=$(PREFIX)-$$i || exit 1; done
 > @$(MAKE) --no-print-directory stability RUNS="$$(seq -f '$(PREFIX)-%g' 1 $(N) | tr '\n' ' ')"
+bootstrap: setup lab-build
+demo:
+> $(MAKE) lab-up
+> $(MAKE) challenge-up
+> $(MAKE) preflight
+> $(MAKE) lab-check-ext
+> $(MAKE) challenge-check
+> $(MAKE) assess RUN=demo-main-$(STAMP) PDF=1
+> $(MAKE) challenge RUN=demo-chal-$(STAMP) PDF=1
+> $(MAKE) replay RUN=demo-main-$(STAMP)
+> $(MAKE) replay RUN=demo-chal-$(STAMP)
+> @echo "Reports: results/demo-main-$(STAMP)/report.pdf and results/demo-chal-$(STAMP)/report.pdf"
+demo-down: challenge-down lab-down

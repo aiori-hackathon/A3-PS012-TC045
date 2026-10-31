@@ -1,0 +1,50 @@
+# Live demo: builds the isolated DNS lab on a GitHub runner from a clean checkout, assesses the 20 lab servers and the
+# 6 deceptive servers with ResolverLens, writes the reports, replays the evidence, and shows the results on the run page.
+# Run it by hand: Actions tab, "Live demo", Run workflow. It also runs when a version tag (v*) is pushed.
+name: Live demo
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: read
+jobs:
+  demo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Load the netem kernel module (needed by the two delayed lab servers)
+        run: sudo modprobe sch_netem
+      - name: Build the virtual environment and the Docker images
+        run: make bootstrap
+      - name: Optional PDF export
+        run: .venv/bin/pip install weasyprint || echo "PDF export unavailable; HTML reports are still written"
+      - name: Run the demo (lab, checks, both assessments, reports, replay)
+        run: make demo
+      - name: Show the results on this page
+        if: always()
+        run: |
+          {
+            echo "## ResolverLens live demo"
+            echo
+            echo "### Main lab: 20 seeded servers"
+            cat results/demo-main-*/summary.md || true
+            echo
+            echo "### Challenge set: 6 servers built to fool a single-flag check"
+            cat results/demo-chal-*/summary.md || true
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload reports and evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: demo-results
+          path: results/
+      - name: Container state and logs (only on failure)
+        if: failure()
+        run: |
+          docker ps -a --format 'table {{.Names}}\t{{.Status}}'
+          for c in rl-canary rl-t17 rl-c05 rl-ext; do echo "== $c"; docker logs "$c" 2>&1 | tail -15; done
