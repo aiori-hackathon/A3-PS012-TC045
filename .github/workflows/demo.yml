@@ -34,7 +34,7 @@ jobs:
             echo "## ResolverLens live demo"
             echo
             echo "### Interactive Packet Tracer Simulator"
-            echo "Live Web Simulator: https://aiori-hackathon.github.io/A3-PS012-TC045/"
+            echo "Live Web Simulator: https://resolverlens-sim.raappocf.workers.dev"
             echo
             echo "### Main lab: 20 seeded servers"
             cat results/demo-main-*/summary.md || true
