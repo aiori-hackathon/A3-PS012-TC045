@@ -109,3 +109,6 @@ demo:
 > $(MAKE) replay RUN=demo-chal-$(STAMP)
 > @echo "Reports: results/demo-main-$(STAMP)/report.pdf and results/demo-chal-$(STAMP)/report.pdf"
 demo-down: challenge-down lab-down
+
+sim:
+> .venv/bin/python -m resolverlens.cli sim --out docs/sim.html

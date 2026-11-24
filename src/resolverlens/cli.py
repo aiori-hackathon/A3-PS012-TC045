@@ -9,6 +9,7 @@ from resolverlens.report import build_report
 from resolverlens.stability import stability
 from resolverlens.preflight import run_preflight
 from resolverlens.runner import run_probe
+from resolverlens.sim import build_sim_html
 
 
 def main(argv=None):
@@ -37,7 +38,14 @@ def main(argv=None):
     r.add_argument("run_dir")
     r.add_argument("--targets", help="targets file (default: the one recorded in the run)")
     r.add_argument("--pdf", action="store_true", help="also write report.pdf (needs the optional weasyprint package)")
+    sm = sub.add_parser("sim", help="build interactive Packet Tracer simulator HTML")
+    sm.add_argument("--out", default="docs/sim.html")
+    sm.add_argument("--site-dir", help="optional GitHub Pages output directory")
     args = parser.parse_args(argv)
+    if args.command == "sim":
+        out = build_sim_html(out_path=args.out, site_dir=args.site_dir)
+        print(f"wrote {out}")
+        return 0
     if args.command == "report":
         return _report(args)
     if args.command == "preflight":
