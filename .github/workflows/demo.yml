@@ -5,8 +5,6 @@ on:
     tags: ["v*"]
 permissions:
   contents: read
-  pages: write
-  id-token: write
 jobs:
   demo:
     runs-on: ubuntu-latest
@@ -24,9 +22,6 @@ jobs:
         run: .venv/bin/pip install weasyprint || echo "PDF export unavailable; HTML reports are still written"
       - name: Run the demo (lab, checks, both assessments, reports, replay)
         run: make demo
-      - name: Build interactive Packet Tracer simulator with live CI telemetry
-        if: always()
-        run: .venv/bin/python -m resolverlens.cli sim --out docs/sim.html --site-dir _site
       - name: Show the results on this page
         if: always()
         run: |
@@ -42,24 +37,12 @@ jobs:
             echo "### Challenge set: 6 servers built to fool a single-flag check"
             cat results/demo-chal-*/summary.md || true
           } >> "$GITHUB_STEP_SUMMARY"
-      - name: Upload reports, evidence and interactive simulator
+      - name: Upload reports and evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: demo-results
-          path: |
-            results/
-            docs/sim.html
-      - name: Upload GitHub Pages portal artifact
-        if: success()
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: "_site"
-      - name: Deploy interactive simulator and live reports to GitHub Pages
-        if: success()
-        id: deployment
-        uses: actions/deploy-pages@v4
-        continue-on-error: true
+          path: results/
       - name: Container state and logs (only on failure)
         if: failure()
         run: |
