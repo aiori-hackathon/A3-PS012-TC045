@@ -34,7 +34,7 @@ jobs:
             echo "## ResolverLens live demo"
             echo
             echo "### Interactive Packet Tracer Simulator"
-            echo "Live Web Simulator: https://resolverlens-sim.raappocf.workers.dev"
+            echo "Live Web Simulator: https://resolverlens.raappo.dpdns.org"
             echo
             echo "### Main lab: 20 seeded servers"
             cat results/demo-main-*/summary.md || true

@@ -6,7 +6,7 @@
 [![tests](https://github.com/aiori-hackathon/A3-PS012-TC045/actions/workflows/ci.yml/badge.svg)](https://github.com/aiori-hackathon/A3-PS012-TC045/actions/workflows/ci.yml)
 [![live demo](https://github.com/aiori-hackathon/A3-PS012-TC045/actions/workflows/demo.yml/badge.svg)](https://github.com/aiori-hackathon/A3-PS012-TC045/actions/workflows/demo.yml)
 
-**[Launch Interactive Cloud Packet Tracer Simulator & Live Reports](https://resolverlens-sim.raappocf.workers.dev)**
+**[Launch Interactive Cloud Packet Tracer Simulator & Live Reports](https://resolverlens.raappo.dpdns.org)**
 
 ResolverLens tests whether authorised lab DNS servers provide recursion to an external client, and labels each one **Recursive**, **Authoritative-only**, **Refused** or **Inconclusive**. Its proof of recursion is not a flag a server sets: the tool asks for a unique made-up name that only our own *canary server* can answer, and the server counts as recursive only if the canary server's log shows that it looked the name up. Every verdict is scored against seeded ground truth, rate-limited, reproducible, and explained in a report.
 
