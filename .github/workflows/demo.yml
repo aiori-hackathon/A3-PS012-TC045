@@ -1,6 +1,3 @@
-# Live demo: builds the isolated DNS lab on a GitHub runner from a clean checkout, assesses the 20 lab servers and the
-# 6 deceptive servers with ResolverLens, writes the reports, replays the evidence, and shows the results on the run page.
-# Run it by hand: Actions tab, "Live demo", Run workflow. It also runs when a version tag (v*) is pushed.
 name: Live demo
 on:
   workflow_dispatch:
@@ -8,6 +5,8 @@ on:
     tags: ["v*"]
 permissions:
   contents: read
+  pages: write
+  id-token: write
 jobs:
   demo:
     runs-on: ubuntu-latest
@@ -25,11 +24,17 @@ jobs:
         run: .venv/bin/pip install weasyprint || echo "PDF export unavailable; HTML reports are still written"
       - name: Run the demo (lab, checks, both assessments, reports, replay)
         run: make demo
+      - name: Build interactive Packet Tracer simulator with live CI telemetry
+        if: always()
+        run: .venv/bin/python -m resolverlens.cli sim --out docs/sim.html --site-dir _site
       - name: Show the results on this page
         if: always()
         run: |
           {
             echo "## ResolverLens live demo"
+            echo
+            echo "### Interactive Packet Tracer Simulator"
+            echo "Live Web Simulator: https://aiori-hackathon.github.io/A3-PS012-TC045/"
             echo
             echo "### Main lab: 20 seeded servers"
             cat results/demo-main-*/summary.md || true
@@ -37,12 +42,24 @@ jobs:
             echo "### Challenge set: 6 servers built to fool a single-flag check"
             cat results/demo-chal-*/summary.md || true
           } >> "$GITHUB_STEP_SUMMARY"
-      - name: Upload reports and evidence
+      - name: Upload reports, evidence and interactive simulator
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: demo-results
-          path: results/
+          path: |
+            results/
+            docs/sim.html
+      - name: Upload GitHub Pages portal artifact
+        if: success()
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "_site"
+      - name: Deploy interactive simulator and live reports to GitHub Pages
+        if: success()
+        id: deployment
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
       - name: Container state and logs (only on failure)
         if: failure()
         run: |

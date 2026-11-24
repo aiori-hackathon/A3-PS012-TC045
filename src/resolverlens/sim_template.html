@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>ResolverLens Cloud Packet Tracer · A3-PS012-TC045</title>
+<style>
+:root[data-theme="dark"] {
+  --bg: #090d1a;
+  --bg-grad: radial-gradient(circle at 50% 45%, #131e3a 0%, #080c17 100%);
+  --grid-dot: rgba(148, 163, 184, 0.12);
+  --header-bg: #060913;
+  --panel: #0f172a;
+  --alt: #162038;
+  --node-bg: #152242;
+  --node-hop: #1e1b3a;
+  --node-can: #22153d;
+  --border: #26365c;
+  --wire-idle: #334155;
+  --text: #f1f5f9;
+  --text-strong: #ffffff;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --rec: #ef4444;
+  --auth: #3b82f6;
+  --ref: #10b981;
+  --inc: #f59e0b;
+  --canary: #a855f7;
+  --hex-bg: #060913;
+  --zone-vantage: rgba(56, 189, 248, 0.05);
+  --zone-target: rgba(255, 255, 255, 0.025);
+  --zone-canary: rgba(168, 85, 247, 0.06);
+}
+:root[data-theme="light"] {
+  --bg: #e2e8f0;
+  --bg-grad: radial-gradient(circle at 50% 45%, #ffffff 0%, #eef2f6 100%);
+  --grid-dot: rgba(71, 85, 105, 0.14);
+  --header-bg: #ffffff;
+  --panel: #ffffff;
+  --alt: #f8fafc;
+  --node-bg: #ffffff;
+  --node-hop: #f5f3ff;
+  --node-can: #faf5ff;
+  --border: #cbd5e1;
+  --wire-idle: #94a3b8;
+  --text: #1e293b;
+  --text-strong: #0f172a;
+  --muted: #64748b;
+  --accent: #0284c7;
+  --rec: #dc2626;
+  --auth: #2563eb;
+  --ref: #059669;
+  --inc: #d97706;
+  --canary: #7c3aed;
+  --hex-bg: #f1f5f9;
+  --zone-vantage: rgba(2, 132, 199, 0.055);
+  --zone-target: rgba(37, 99, 235, 0.035);
+  --zone-canary: rgba(124, 58, 237, 0.055);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: var(--bg); color: var(--text); font-size: 13.5px; line-height: 1.42;
+}
+header {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  padding: 9px 16px; background: var(--header-bg); border-bottom: 1px solid var(--border); gap: 10px;
+}
+.brand { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.brand h1 { margin: 0; font-size: 17px; color: var(--text-strong); font-weight: 800; letter-spacing: -0.2px; }
+.badge {
+  padding: 3px 10px; border-radius: 99px; font-size: 11.5px; font-weight: 700;
+  background: rgba(2, 132, 199, 0.12); color: var(--accent); border: 1px solid rgba(2, 132, 199, 0.3);
+}
+.hdr-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+button, a.btn {
+  background: var(--alt); color: var(--text); border: 1px solid var(--border);
+  padding: 6px 11px; border-radius: 7px; font-size: 12px; cursor: pointer; font-weight: 600;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 5px; transition: all 0.15s;
+}
+button:hover, a.btn:hover { border-color: var(--accent); }
+button.primary, a.btn.primary { background: #0284c7; border-color: #0284c7; color: #fff; }
+button.primary:hover, a.btn.primary:hover { background: #0369a1; }
+button.drawer-toggle.closed { background: rgba(2, 132, 199, 0.15); border-color: var(--accent); color: var(--accent); }
+
+/* Top Ribbon: Scenarios & Classifier Scoreboard */
+.control-ribbon {
+  display: grid; grid-template-columns: 1.15fr 1fr; gap: 10px;
+  padding: 8px 12px; background: var(--header-bg); border-bottom: 1px solid var(--border);
+}
+@media (max-width: 1180px) { .control-ribbon { grid-template-columns: 1fr; } }
+.ribbon-box {
+  display: flex; flex-direction: column; gap: 5px;
+  background: var(--alt); border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px;
+}
+.ribbon-label {
+  font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.lab-tabs, .method-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 6px; }
+.lab-tab {
+  padding: 6px 9px; border-radius: 6px; border: 1px solid var(--border); background: var(--panel);
+  cursor: pointer; text-align: left; transition: all 0.15s;
+}
+.lab-tab:hover { border-color: var(--accent); }
+.lab-tab.active {
+  border-color: var(--accent); background: rgba(2, 132, 199, 0.11);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+.lab-tab-title { font-weight: 800; font-size: 12px; color: var(--text-strong); }
+.lab-tab-sub { font-size: 10.5px; color: var(--muted); margin-top: 1px; }
+
+.method-card {
+  padding: 6px 9px; border-radius: 6px; border: 1px solid var(--border); background: var(--panel);
+  cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 6px;
+}
+.method-card:hover { border-color: var(--accent); }
+.method-card.active {
+  border-color: #4f46e5; background: rgba(79, 70, 229, 0.11);
+  box-shadow: inset 0 0 0 1px #4f46e5;
+}
+.mc-name { font-weight: 800; font-size: 11.5px; color: var(--text-strong); }
+.mc-sub { font-size: 10px; color: var(--muted); }
+.mc-score { padding: 2px 7px; border-radius: 5px; font-weight: 800; font-size: 11.5px; font-family: monospace; }
+.score-ok { background: rgba(16, 185, 129, 0.16); color: var(--ref); border: 1px solid rgba(16, 185, 129, 0.4); }
+.score-warn { background: rgba(239, 68, 68, 0.16); color: var(--rec); border: 1px solid rgba(239, 68, 68, 0.4); }
+
+/* Dynamic Flex Workspace with Collapsible Sidebars */
+.workspace {
+  display: flex; gap: 10px; padding: 10px; min-height: calc(100vh - 145px); align-items: stretch;
+}
+@media (max-width: 1180px) { .workspace { flex-direction: column; } }
+.sidebar-left { width: 270px; flex-shrink: 0; transition: all 0.2s ease; }
+.sidebar-right { width: 365px; flex-shrink: 0; transition: all 0.2s ease; }
+.sidebar-left.collapsed, .sidebar-right.collapsed { display: none; }
+.stage-center { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+.card {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+  display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.card-hd {
+  padding: 9px 13px; background: var(--alt); border-bottom: 1px solid var(--border);
+  font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 0.4px; color: var(--accent);
+  display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.t-list { overflow-y: auto; max-height: calc(100vh - 235px); padding: 6px; }
+.t-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 10px; margin-bottom: 4px; border-radius: 7px; cursor: pointer;
+  border: 1px solid transparent; background: var(--alt);
+}
+.t-item:hover { border-color: var(--accent); }
+.t-item.sel { border-color: var(--accent); background: rgba(2, 132, 199, 0.12); box-shadow: inset 3px 0 0 var(--accent); }
+.pill { padding: 3px 7px; border-radius: 5px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; }
+.pill-recursive { background: rgba(239,68,68,.15); color: var(--rec); border: 1px solid rgba(239,68,68,.38); }
+.pill-refused { background: rgba(16,185,129,.15); color: var(--ref); border: 1px solid rgba(16,185,129,.38); }
+.pill-authoritative_only { background: rgba(59,130,246,.15); color: var(--auth); border: 1px solid rgba(59,130,246,.38); }
+.pill-inconclusive { background: rgba(245,158,11,.15); color: var(--inc); border: 1px solid rgba(245,158,11,.38); }
+.pill-fooled { background: #dc2626; color: #fff; border: 1px solid #b91c1c; }
+
+/* High-Visibility Dot-Grid Topology Canvas */
+.canvas-wrap {
+  background-image: radial-gradient(var(--grid-dot) 1.2px, transparent 1.2px), var(--bg-grad);
+  background-size: 20px 20px, 100% 100%;
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  padding: 6px; min-height: 460px; overflow: auto;
+}
+svg#topo { width: 100%; height: 475px; display: block; transition: transform 0.2s ease; }
+
+/* Self-Documenting Two-Column Simulation Control Deck */
+.sim-deck {
+  display: grid; grid-template-columns: 1.35fr 1fr; gap: 10px;
+  padding: 10px 12px; background: var(--alt);
+  border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+}
+@media (max-width: 980px) { .sim-deck { grid-template-columns: 1fr; } }
+.deck-group {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px;
+}
+.deck-title {
+  font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px;
+  color: var(--muted); margin-bottom: 6px; display: flex; justify-content: space-between;
+}
+.probe-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+@media (max-width: 720px) { .probe-cards { grid-template-columns: repeat(2, 1fr); } }
+.probe-card {
+  padding: 6px 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--alt);
+  cursor: pointer; text-align: left; transition: all 0.15s;
+}
+.probe-card:hover { border-color: var(--accent); }
+.probe-card.active {
+  background: var(--accent); color: #ffffff; border-color: var(--accent);
+}
+.probe-card.active .pc-sub, .probe-card.active .pc-stat { color: rgba(255,255,255,0.92); }
+.pc-top { font-weight: 800; font-size: 11.5px; }
+.pc-sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
+.pc-stat { font-size: 10.5px; font-family: monospace; font-weight: 700; margin-top: 3px; color: var(--accent); }
+
+.action-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.act-btn {
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+  padding: 6px 9px; border-radius: 6px; border: 1px solid var(--border); background: var(--alt);
+  cursor: pointer; text-align: left;
+}
+.act-btn.primary { background: #0284c7; border-color: #0284c7; color: #fff; }
+.act-btn.primary .act-sub { color: rgba(255,255,255,0.88); }
+.act-main { font-weight: 800; font-size: 11.5px; }
+.act-sub { font-size: 10px; color: var(--muted); margin-top: 2px; font-weight: 500; }
+
+/* Hop Log */
+.log { padding: 9px 14px; font-family: ui-monospace, monospace; font-size: 12.5px; overflow-y: auto; max-height: 170px; }
+.hop {
+  padding: 6px 10px; border-left: 3.5px solid var(--accent); background: var(--alt);
+  margin-bottom: 5px; border-radius: 0 6px 6px 0;
+}
+.hop.hit { border-left-color: var(--canary); background: rgba(124, 58, 237, 0.08); }
+.hop.drop { border-left-color: var(--rec); background: rgba(220, 38, 38, 0.08); }
+.hop.ok { border-left-color: var(--ref); }
+
+/* Right Inspector Sections */
+.sec { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+.fgrid { display: grid; grid-template-columns: repeat(6,1fr); gap: 4px; margin-top: 6px; font-family: monospace; text-align: center; font-size: 11.5px; }
+.bit { padding: 5px 2px; border-radius: 5px; background: var(--alt); border: 1px solid var(--border); }
+.bit.on { background: rgba(2,132,199,.16); border-color: var(--accent); color: var(--text-strong); font-weight: 800; }
+.bit.warn { background: rgba(220,38,38,.18); border-color: var(--rec); color: var(--rec); font-weight: 800; }
+.hex {
+  font-family: ui-monospace, monospace; font-size: 11.5px; background: var(--hex-bg);
+  padding: 8px; border-radius: 6px; border: 1px solid var(--border); color: var(--auth);
+  white-space: pre; overflow-x: auto; margin-top: 6px; font-weight: 600;
+}
+.cbox {
+  font-family: ui-monospace, monospace; font-size: 11.5px; background: rgba(124,58,237,.08);
+  border: 1px solid rgba(124,58,237,.35); color: var(--text); padding: 8px; border-radius: 6px; margin-top: 6px;
+}
+.exp-list { display: flex; flex-direction: column; gap: 5px; margin-top: 6px; }
+.exp-btn {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 9px; border-radius: 6px; border: 1px solid var(--border); background: var(--alt);
+  text-align: left; cursor: pointer;
+}
+.exp-btn.mut-on { background: rgba(5, 150, 105, 0.15); border-color: var(--ref); color: var(--text-strong); box-shadow: inset 3px 0 0 var(--ref); }
+.drawer { display: none; background: var(--header-bg); border-bottom: 1px solid var(--border); padding: 10px 16px; }
+.drawer.open { display: block; }
+.runs { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 8px; margin-top: 8px; }
+.rcard { background: var(--panel); border: 1px solid var(--border); border-radius: 7px; padding: 8px 10px; font-size: 11.5px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <button class="drawer-toggle" id="btn-left-drawer" onclick="togglePanel('left')" title="Show/Hide Left Target List">&#9776; Targets</button>
+    <h1>ResolverLens Cloud Packet Tracer</h1>
+    <span class="badge">A3-PS012-TC045 · Lab 10.10.0.0/16</span>
+    <span id="meta-badge" class="badge">Verified Telemetry</span>
+  </div>
+  <div class="hdr-actions">
+    <button onclick="focusCanvas()" id="btn-focus" title="Expand simulation canvas to full screen width">&#9974; Focus Canvas</button>
+    <a id="b-html" class="btn" href="#" target="_blank" style="display:none">&#128196; Report (HTML)</a>
+    <a id="b-pdf" class="btn" href="#" target="_blank" style="display:none">&#128213; Report (PDF)</a>
+    <button onclick="toggleTheme()" id="theme-btn">&#9728;&#65039; Light / &#127769; Dark</button>
+    <button class="primary" onclick="toggleDrawer()">&#9729; Cloud CI Runs</button>
+    <button class="drawer-toggle" id="btn-right-drawer" onclick="togglePanel('right')" title="Show/Hide Right Packet Inspector">Inspector &#9776;</button>
+  </div>
+</header>
+
+<div id="drawer" class="drawer">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+    <div><b>Live GitHub Actions Cloud Docker Execution (<code>demo.yml</code>)</b> — Spins up all 29 isolated containers on Ubuntu with <code>sch_netem</code>, runs <code>rlens</code>, verifies replay, and updates this portal.</div>
+    <div style="display:flex;gap:6px">
+      <a class="btn primary" href="https://github.com/aiori-hackathon/A3-PS012-TC045/actions/workflows/demo.yml" target="_blank">&#9654; Trigger Live Cloud Docker Run</a>
+      <button onclick="loadRuns()">&#8635; Refresh Runs</button>
+    </div>
+  </div>
+  <div id="runs-box" class="runs"></div>
+</div>
+
+<!-- Organized Top Ribbon -->
+<div class="control-ribbon" id="top-ribbon">
+  <div class="ribbon-box">
+    <div class="ribbon-label">
+      <span>1. Lab Scenario Dataset (Click a Lab to Load Its Telemetry)</span>
+      <span id="ds-summary-meta" style="font-family:monospace">80 probes · seed 1337</span>
+    </div>
+    <div class="lab-tabs" id="lab-tabs"></div>
+  </div>
+  <div class="ribbon-box">
+    <div class="ribbon-label">
+      <span>2. Scanner Comparison Scoreboard (Click Any Scanner to See Its Verdicts)</span>
+      <span id="active-mode-tag" style="color:var(--accent)">Active: ResolverLens</span>
+    </div>
+    <div class="method-cards" id="method-cards"></div>
+  </div>
+</div>
+
+<div class="workspace">
+  <!-- Collapsible Left Sidebar: Target Servers -->
+  <div class="card sidebar-left" id="panel-left">
+    <div class="card-hd">
+      <span id="t-title">Lab Targets</span>
+      <div style="display:flex;gap:5px;align-items:center">
+        <span id="score-pill" class="badge">20/20</span>
+        <button onclick="togglePanel('left')" style="padding:2px 6px;font-size:11px" title="Collapse Target Sidebar">&laquo;</button>
+      </div>
+    </div>
+    <div style="padding:7px 10px;border-bottom:1px solid var(--border);font-size:11.5px;color:var(--muted)">
+      Click any DNS server below to simulate its 4-packet assessment on the canvas:
+    </div>
+    <div id="t-list" class="t-list"></div>
+  </div>
+
+  <!-- Center Stage: High-Visibility Topology Canvas -->
+  <div class="card stage-center">
+    <div class="card-hd">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span id="c-title" style="font-size:13px">Packet Topology</span>
+        <span id="c-sub-pill" class="badge">Target Selected</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:11.5px;color:var(--muted);font-weight:600">Rate Limit: 1 qps/target · 5 qps global</span>
+        <button onclick="cycleZoom()" id="zoom-btn" style="padding:3px 8px;font-size:11px">Zoom: 100%</button>
+      </div>
+    </div>
+
+    <div class="canvas-wrap">
+      <svg id="topo" viewBox="0 0 920 420" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <marker id="arr-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#0284c7"/>
+          </marker>
+          <marker id="arr-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#059669"/>
+          </marker>
+          <marker id="arr-purple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#7c3aed"/>
+          </marker>
+          <marker id="arr-amber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#d97706"/>
+          </marker>
+          <marker id="arr-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#dc2626"/>
+          </marker>
+        </defs>
+
+        <!-- Three Architectural Zones with Bold Headers -->
+        <rect x="12" y="12" width="210" height="396" rx="12" fill="var(--zone-vantage)" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="6,5"/>
+        <text x="26" y="36" fill="var(--accent)" font-size="12.5" font-weight="800">1. DUAL VANTAGE CLIENTS</text>
+
+        <rect x="315" y="12" width="285" height="396" rx="12" fill="var(--zone-target)" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="6,5"/>
+        <text x="332" y="36" fill="var(--text-strong)" font-size="12.5" font-weight="800">2. TARGET SUBNET (10.10.0.0/16)</text>
+
+        <rect x="695" y="12" width="213" height="396" rx="12" fill="var(--zone-canary)" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="6,5"/>
+        <text x="712" y="36" fill="var(--canary)" font-size="12.5" font-weight="800">3. CANARY WITNESS ZONE</text>
+
+        <!-- Guide Wires -->
+        <g id="wires"></g>
+
+        <!-- Node 1: External Probe Client (rl-ext) x=24..208 -->
+        <g transform="translate(24, 62)">
+          <rect width="184" height="106" rx="10" fill="var(--node-bg)" stroke="#0284c7" stroke-width="2.5"/>
+          <text x="14" y="27" fill="var(--text-strong)" font-weight="800" font-size="15.5">rl-ext (Outsider)</text>
+          <text x="14" y="50" fill="var(--accent)" font-family="monospace" font-size="14" font-weight="800">10.10.2.10</text>
+          <text x="14" y="72" fill="var(--text)" font-size="12" font-weight="600">Untrusted External Client</text>
+          <text x="14" y="92" fill="var(--muted)" font-size="11.5">Runs: rlens probe</text>
+        </g>
+
+        <!-- Node 2: Control Client (rl-ctl) x=24..208 -->
+        <g transform="translate(24, 258)" style="cursor:pointer" onclick="runCtl()">
+          <rect width="184" height="108" rx="10" fill="var(--node-bg)" stroke="#059669" stroke-width="2.5"/>
+          <text x="14" y="27" fill="var(--text-strong)" font-weight="800" font-size="15.5">rl-ctl (Trusted ACL)</text>
+          <text x="14" y="50" fill="var(--ref)" font-family="monospace" font-size="14" font-weight="800">10.10.1.10 /24</text>
+          <text x="14" y="72" fill="var(--text)" font-size="12" font-weight="600">Inside Allowed ACL Range</text>
+          <text x="14" y="93" fill="var(--ref)" font-size="11.5" font-weight="800">&#9654; Click to Test ACL Policy</text>
+        </g>
+
+        <!-- Node 3: Target Server x=335..580 (245px wide) -->
+        <g transform="translate(335, 58)">
+          <rect width="245" height="118" rx="10" fill="var(--node-bg)" stroke="#2563eb" stroke-width="3"/>
+          <text id="st-id" x="16" y="29" fill="var(--text-strong)" font-weight="800" font-size="17">rl-t01 (bind)</text>
+          <text id="st-ip" x="16" y="53" fill="var(--auth)" font-family="monospace" font-size="14.5" font-weight="800">10.10.0.11 : 53/UDP</text>
+          <text id="st-bh" x="16" y="76" fill="var(--text)" font-size="13" font-weight="600">Profile: open_recursive</text>
+          <text id="st-vd" x="16" y="101" fill="var(--rec)" font-weight="800" font-size="13.5">Verdict: RECURSIVE</text>
+        </g>
+
+        <!-- Node 4: Upstream Forwarder Hop x=335..580, y=258 -->
+        <g id="hop-node" transform="translate(335, 258)" visibility="hidden">
+          <rect width="245" height="106" rx="10" fill="var(--node-hop)" stroke="#7c3aed" stroke-width="2.5" stroke-dasharray="6,4"/>
+          <text id="sh-t" x="16" y="28" fill="var(--text-strong)" font-weight="800" font-size="14.5">Upstream Resolver Hop</text>
+          <text id="sh-ip" x="16" y="52" fill="var(--canary)" font-family="monospace" font-size="13" font-weight="800">10.10.0.11</text>
+          <text x="16" y="76" fill="var(--text)" font-size="12">Forwards recursive query</text>
+          <text x="16" y="94" fill="var(--muted)" font-size="11.5">Canary logs upstream resolver IP</text>
+        </g>
+
+        <!-- Node 5: Canary Witness Server x=708..896 (188px wide) -->
+        <g transform="translate(708, 122)">
+          <rect width="188" height="132" rx="10" fill="var(--node-can)" stroke="#7c3aed" stroke-width="2.8"/>
+          <text x="14" y="28" fill="var(--text-strong)" font-weight="800" font-size="15.5">rl-canary (Witness)</text>
+          <text x="14" y="51" fill="var(--canary)" font-family="monospace" font-size="14" font-weight="800">10.10.0.5 : 53</text>
+          <text x="14" y="73" fill="var(--text)" font-size="12.5" font-weight="600">Zone: *.canary.lab</text>
+          <text x="14" y="94" fill="var(--muted)" font-size="12">Marker IP: 192.0.2.53</text>
+          <text id="sc-hit" x="14" y="117" fill="var(--ref)" font-weight="800" font-size="13.5">Witness Hits: 3/3</text>
+        </g>
+
+        <!-- Animated Packet Layer -->
+        <g id="pkt-layer"></g>
+      </svg>
+    </div>
+
+    <!-- Self-Documenting Simulation Deck (Replaces the 7 Confusing Buttons) -->
+    <div class="sim-deck">
+      <div class="deck-group">
+        <div class="deck-title">
+          <span>Step-by-Step Probe Selector (4 Queries Sent Per Target)</span>
+          <span>Click any probe below to inspect &amp; animate its path:</span>
+        </div>
+        <div id="tabs" class="probe-cards"></div>
+      </div>
+
+      <div class="deck-group">
+        <div class="deck-title">
+          <span>Simulation Playback &amp; Dual-Vantage Proof</span>
+          <span>Interactive Controls</span>
+        </div>
+        <div class="action-cards">
+          <button class="act-btn primary" onclick="animCur()">
+            <span class="act-main">&#9654; Replay Selected Probe</span>
+            <span class="act-sub">Animate current packet hop</span>
+          </button>
+          <button class="act-btn" onclick="animAll()">
+            <span class="act-main">&#9654;&#9654; Auto-Play All 4</span>
+            <span class="act-sub">Run Baseline + 3 Canaries</span>
+          </button>
+          <button class="act-btn" onclick="runCtl()">
+            <span class="act-main">&#128737; Test Control Client</span>
+            <span class="act-sub">Probe from trusted 10.10.1.10</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="log" class="log"></div>
+  </div>
+
+  <!-- Collapsible Right Sidebar: PDU & Witness Inspector -->
+  <div class="card sidebar-right" id="panel-right">
+    <div class="card-hd">
+      <div style="display:flex;align-items:center;gap:6px">
+        <button onclick="togglePanel('right')" style="padding:2px 6px;font-size:11px" title="Collapse Inspector Sidebar">&raquo;</button>
+        <span>Packet &amp; Witness Inspector</span>
+      </div>
+      <span id="seq-b" class="badge">Seq #1</span>
+    </div>
+
+    <div class="sec">
+      <div style="display:flex;justify-content:space-between;font-size:12.5px">
+        <span id="p-qn" style="font-family:monospace;font-weight:800;color:var(--accent)">ns.lab.test</span>
+        <span id="p-rt" style="color:var(--muted);font-weight:700">RTT: 4 ms</span>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px">RFC 1035 12-Byte DNS Header Flags &amp; Response Code:</div>
+      <div class="fgrid" id="fgrid"></div>
+      <div class="hex" id="hex"></div>
+    </div>
+
+    <div class="sec">
+      <div style="font-weight:800;font-size:12px;color:var(--canary)">Canary Authoritative Query Log (10.10.0.5):</div>
+      <div class="cbox" id="cbox"></div>
+    </div>
+
+    <div class="sec">
+      <div style="display:flex;justify-content:space-between;font-size:12px">
+        <span style="font-weight:700">Amplification Tripwire Monitor</span>
+        <span id="amp-t" style="font-family:monospace;font-weight:800;color:var(--accent)">53B &rarr; 102B</span>
+      </div>
+    </div>
+
+    <div class="sec" style="border-bottom:none">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-weight:800;font-size:12px;color:var(--ref)">Interactive "What-If" Lab Experiments</span>
+        <button onclick="rstMut()" style="padding:2px 8px;font-size:11px">Reset Server</button>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">Click an experiment to modify this server's live behavior:</div>
+      <div class="exp-list">
+        <button class="exp-btn" id="mut-acl" onclick="togMut('acl')">
+          <div>
+            <div style="font-weight:700;font-size:11.5px">1. Apply RFC 5358 ACL Remediation</div>
+            <div style="font-size:10.5px;color:var(--muted)">Restrict recursion to trusted subnet (Outsider gets REFUSED)</div>
+          </div>
+          <span class="badge">ACL</span>
+        </button>
+        <button class="exp-btn" id="mut-spoof" onclick="togMut('spoof')">
+          <div>
+            <div style="font-weight:700;font-size:11.5px">2. Simulate Deceptive RA=1 Spoofing</div>
+            <div style="font-size:10.5px;color:var(--muted)">Server fakes RA=1 &amp; marker IP without querying Canary</div>
+          </div>
+          <span class="badge">Liar</span>
+        </button>
+        <button class="exp-btn" id="mut-loss" onclick="togMut('loss')">
+          <div>
+            <div style="font-weight:700;font-size:11.5px">3. Inject Packet Drop on Canary #1</div>
+            <div style="font-size:10.5px;color:var(--muted)">1 timeout + 2 answers triggers R4 Inconclusive (CONFLICT)</div>
+          </div>
+          <span class="badge">Loss</span>
+        </button>
+      </div>
+      <div id="v-box" style="margin-top:8px;padding:9px;border-radius:7px;background:var(--alt);border:1px solid var(--border);font-size:12px"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const BUNDLE = __RLENS_SIM_DATA__, DATA = BUNDLE.datasets || {}, META = BUNDLE.meta || {};
+let dsKey = Object.keys(DATA)[0] || "main", mode = "resolverlens", tid = "t01", aIdx = 1, timer = null, muts = {}, zoomLevel = 1;
+
+const LAB_LABELS = {
+  live_main: { title: "Live CI Main Lab", sub: "20 Servers · GitHub Actions" },
+  live_challenge: { title: "Live CI Challenge", sub: "6 Deceptive · GitHub Actions" },
+  main: { title: "1. Main Lab (20)", sub: "Seeded Ground Truth (phase5-main)" },
+  challenge: { title: "2. Challenge Lab (6)", sub: "Deceptive Servers (chal-a)" },
+  fault: { title: "3. Fault Demo (t18)", sub: "Rate-Limit Removed (fault-t18)" },
+  stab1: { title: "4. Stability Run", sub: "Repeatability Proof (stab-1)" }
+};
+
+const METHODS = [
+  { key: "resolverlens", name: "ResolverLens (Ours)", sub: "Flags + Answer + Canary Log" },
+  { key: "flag_ra_aa", name: "RA + AA Check", sub: "Header RA=1 & AA=0 (No Witness)" },
+  { key: "flag_ra", name: "Nmap RA-Flag", sub: "Single-Query RA=1 Bit Only" }
+];
+
+function toggleTheme() {
+  const root = document.documentElement;
+  const next = root.getAttribute("data-theme") === "light" ? "dark" : "light";
+  root.setAttribute("data-theme", next);
+  try { localStorage.setItem("rlens-theme", next); } catch(e) {}
+}
+
+function togglePanel(side) {
+  const el = document.getElementById("panel-" + side);
+  const btn = document.getElementById("btn-" + side + "-drawer");
+  const isClosed = el.classList.toggle("collapsed");
+  btn.classList.toggle("closed", isClosed);
+}
+
+function focusCanvas() {
+  const l = document.getElementById("panel-left");
+  const r = document.getElementById("panel-right");
+  const bothClosed = l.classList.contains("collapsed") && r.classList.contains("collapsed");
+  l.classList.toggle("collapsed", !bothClosed);
+  r.classList.toggle("collapsed", !bothClosed);
+  document.getElementById("btn-left-drawer").classList.toggle("closed", !bothClosed);
+  document.getElementById("btn-right-drawer").classList.toggle("closed", !bothClosed);
+  document.getElementById("btn-focus").textContent = !bothClosed ? "⛶ Exit Focus Mode" : "⛶ Focus Canvas";
+}
+
+function cycleZoom() {
+  zoomLevel = zoomLevel === 1 ? 1.18 : (zoomLevel === 1.18 ? 0.9 : 1);
+  const svg = document.getElementById("topo");
+  svg.style.height = Math.round(475 * zoomLevel) + "px";
+  document.getElementById("zoom-btn").textContent = "Zoom: " + Math.round(zoomLevel * 100) + "%";
+}
+
+function ds() { return DATA[dsKey] || Object.values(DATA)[0]; }
+
+function applyMut(o) {
+  const m = muts[o.id];
+  if (!m || (!m.acl && !m.spoof && !m.loss)) return o;
+  const c = JSON.parse(JSON.stringify(o));
+  c.probes.forEach(p => {
+    if (m.acl) {
+      p.status = "REFUSED"; p.rcode = 5; p.flags = {aa:false,tc:false,rd:p.rd,ra:false}; p.answers = []; p.canary_hit = false; p.canary_sources = [];
+    } else if (m.spoof && p.phase === "canary") {
+      p.status = "NOERROR"; p.rcode = 0; p.flags = {aa:false,tc:false,rd:true,ra:true}; p.answers = ["192.0.2.53"]; p.canary_hit = false; p.canary_sources = [];
+    } else if (m.loss && p.phase === "canary" && p.attempt === 1) {
+      p.status = "TIMEOUT"; p.rcode = null; p.flags = null; p.answers = []; p.rtt_ms = 2000; p.canary_hit = false;
+    }
+  });
+  const b = c.probes.find(p => p.phase === "baseline") || {}, cs = c.probes.filter(p => p.phase === "canary"), hits = cs.filter(x => x.canary_hit).length;
+  if (cs.length && cs.every(x => x.status === "NOERROR" && x.flags && x.flags.ra && !x.flags.aa && (x.answers||[]).includes("192.0.2.53") && x.canary_hit))
+    c.verdict = {label:"recursive",rule:"R1",canary_hits:hits,detail:"R1: 3/3 NOERROR, RA=1, AA=0, marker 192.0.2.53, canary log hit."};
+  else if (b.status === "REFUSED" && cs.every(x => x.status === "REFUSED" && !x.canary_hit))
+    c.verdict = {label:"refused",rule:"R2",canary_hits:hits,detail:"R2: REFUSED on baseline and all 3 canary attempts, 0 canary hits."};
+  else if (b.status === "NOERROR" && b.flags && b.flags.aa && cs.every(x => x.status !== "NOERROR" && !x.canary_hit))
+    c.verdict = {label:"authoritative_only",rule:"R3",canary_hits:hits,detail:"R3: Baseline AA=1 for lab.test; refused recursion with 0 canary hits."};
+  else c.verdict = {label:"inconclusive",rule:"R4",canary_hits:hits,detail:"R4: Evidence incomplete or conflicting across attempts."};
+  return c;
+}
+
+function curT() { return applyMut(ds().targets.find(t => t.id === tid) || ds().targets[0]); }
+
+function evalMode(t, m) {
+  if (m === "resolverlens") return t.verdict.label;
+  const b = t.probes.find(p => p.phase === "baseline") || {}, c1 = t.probes.find(p => p.phase === "canary" && p.attempt === 1) || t.probes[0] || {};
+  if (m === "flag_ra") {
+    if (c1.status === "NOERROR" && c1.flags && c1.flags.ra) return "recursive";
+    if (c1.status === "REFUSED") return "refused";
+    if (b.status === "NOERROR" && b.flags && b.flags.aa) return "authoritative_only";
+    return "inconclusive";
+  }
+  if (c1.status === "NOERROR" && c1.flags && c1.flags.ra && !c1.flags.aa) return "recursive";
+  if (c1.status === "REFUSED" && b.status === "REFUSED") return "refused";
+  if (b.status === "NOERROR" && b.flags && b.flags.aa) return "authoritative_only";
+  return "inconclusive";
+}
+
+function scoreForMode(d, m) {
+  let ok = 0;
+  d.targets.forEach(raw => {
+    const t = applyMut(raw);
+    if (evalMode(t, m) === t.expected) ok++;
+  });
+  return { ok, total: d.targets.length };
+}
+
+function switchDs(k) { dsKey = k; tid = ds().targets[0].id; aIdx = 1; render(); animCur(); }
+function setMode(m) { mode = m; render(); }
+
+function renderRibbon() {
+  const d = ds();
+  const labWrap = document.getElementById("lab-tabs");
+  labWrap.innerHTML = "";
+  Object.keys(DATA).forEach(k => {
+    const info = LAB_LABELS[k] || { title: k, sub: DATA[k].title || "" };
+    const div = document.createElement("div");
+    div.className = "lab-tab" + (k === dsKey ? " active" : "");
+    div.onclick = () => switchDs(k);
+    div.innerHTML = `<div class="lab-tab-title">${info.title}</div><div class="lab-tab-sub">${info.sub}</div>`;
+    labWrap.appendChild(div);
+  });
+
+  const mf = d.manifest || {};
+  document.getElementById("ds-summary-meta").textContent =
+    `Run: ${d.run_id} · ${mf.probes || 0} probes in ${mf.duration_s || 0}s · seed ${mf.seed || 1337}`;
+
+  const mcWrap = document.getElementById("method-cards");
+  mcWrap.innerHTML = "";
+  METHODS.forEach(m => {
+    const sc = scoreForMode(d, m.key);
+    const card = document.createElement("div");
+    card.className = "method-card" + (m.key === mode ? " active" : "");
+    card.onclick = () => setMode(m.key);
+    const allMatch = sc.ok === sc.total;
+    card.innerHTML = `
+      <div>
+        <div class="mc-name">${m.name}</div>
+        <div class="mc-sub">${m.sub}</div>
+      </div>
+      <span class="mc-score ${allMatch ? 'score-ok' : 'score-warn'}">${sc.ok}/${sc.total}</span>
+    `;
+    mcWrap.appendChild(card);
+  });
+
+  const activeObj = METHODS.find(x => x.key === mode) || METHODS[0];
+  document.getElementById("active-mode-tag").textContent = `Active: ${activeObj.name}`;
+}
+
+function render() {
+  renderRibbon();
+  const d = ds(), el = document.getElementById("t-list");
+  el.innerHTML = "";
+  let ok = 0;
+  d.targets.forEach(r => {
+    const t = applyMut(r), lb = evalMode(t, mode), m = lb === t.expected;
+    if (m) ok++;
+    const item = document.createElement("div");
+    item.className = "t-item" + (t.id === tid ? " sel" : "");
+    item.onclick = () => { tid = t.id; aIdx = 1; render(); animCur(); };
+    item.innerHTML = `
+      <div>
+        <div style="font-weight:800;font-family:monospace;font-size:13px">${t.id} · ${t.ip}</div>
+        <div style="font-size:11px;color:var(--muted)">${t.software} · ${t.behavior}</div>
+      </div>
+      <span class="pill ${!m ? 'pill-fooled' : 'pill-' + lb}">${!m ? lb + ' (WRONG)' : lb.replace('_', '-')}</span>
+    `;
+    el.appendChild(item);
+  });
+
+  document.getElementById("t-title").textContent = `Targets (${d.targets.length})`;
+  document.getElementById("score-pill").textContent = `${ok}/${d.targets.length} Match`;
+
+  const hb = document.getElementById("b-html"), pb = document.getElementById("b-pdf");
+  hb.style.display = d.reports && d.reports.html ? "inline-flex" : "none";
+  if (d.reports && d.reports.html) hb.href = d.reports.html;
+  pb.style.display = d.reports && d.reports.pdf ? "inline-flex" : "none";
+  if (d.reports && d.reports.pdf) pb.href = d.reports.pdf;
+
+  const t = curT(), lb = evalMode(t, mode);
+  document.getElementById("c-title").textContent = `Topology · rl-${t.id} (${t.ip})`;
+  document.getElementById("c-sub-pill").textContent = `${t.software} · ${t.behavior}`;
+  document.getElementById("st-id").textContent = `rl-${t.id} (${t.software})`;
+  document.getElementById("st-ip").textContent = `${t.ip} : 53/UDP`;
+  document.getElementById("st-bh").textContent = `Profile: ${t.behavior}`;
+  document.getElementById("st-vd").textContent = `Verdict (${mode}): ${lb.toUpperCase()}`;
+
+  const hn = document.getElementById("hop-node");
+  if (t.hops && t.hops.length) {
+    hn.setAttribute("visibility", "visible");
+    document.getElementById("sh-t").textContent = `Forwarder: rl-${t.hops.join(" → rl-")}`;
+    document.getElementById("sh-ip").textContent = `Upstream IP: ${(t.verdict.canary_sources || [])[0] || "10.10.0.11"}`;
+  } else {
+    hn.setAttribute("visibility", "hidden");
+  }
+  document.getElementById("sc-hit").textContent = `Witness Hits: ${t.verdict.canary_hits || 0}/3`;
+
+  // Guide wires for the enlarged 920x420 viewBox
+  let wHtml = `
+    <line x1="208" y1="92" x2="335" y2="92" stroke="var(--wire-idle)" stroke-width="1.8" stroke-dasharray="6,5"/>
+    <line x1="335" y1="142" x2="208" y2="142" stroke="var(--wire-idle)" stroke-width="1.8" stroke-dasharray="6,5"/>
+    <line x1="208" y1="305" x2="335" y2="162" stroke="var(--wire-idle)" stroke-width="1.5" stroke-dasharray="5,5"/>
+  `;
+  if (t.hops && t.hops.length) {
+    wHtml += `
+      <line x1="458" y1="176" x2="458" y2="258" stroke="var(--wire-idle)" stroke-width="1.8" stroke-dasharray="6,5"/>
+      <line x1="580" y1="305" x2="708" y2="210" stroke="var(--wire-idle)" stroke-width="1.8" stroke-dasharray="6,5"/>
+      <line x1="708" y1="172" x2="580" y2="128" stroke="var(--wire-idle)" stroke-width="1.8" stroke-dasharray="6,5"/>
+    `;
+  } else {
+    wHtml += `
+      <line x1="580" y1="95" x2="708" y2="162" stroke="var(--wire-idle)" stroke-width="1.8" stroke-dasharray="6,5"/>
+      <line x1="708" y1="212" x2="580" y2="145" stroke="var(--wire-idle)" stroke-width="1.8" stroke-dasharray="6,5"/>
+    `;
+  }
+  document.getElementById("wires").innerHTML = wHtml;
+
+  // Render self-explanatory 4-Probe Selector Cards
+  const tabs = document.getElementById("tabs");
+  tabs.innerHTML = "";
+  t.probes.forEach((p, i) => {
+    const b = document.createElement("div");
+    b.className = "probe-card" + (i === aIdx ? " active" : "");
+    const isBase = p.phase === "baseline";
+    b.innerHTML = `
+      <div class="pc-top">${isBase ? "Probe 1: Baseline" : "Probe " + (i + 1) + ": Canary #" + p.attempt}</div>
+      <div class="pc-sub">${isBase ? "Own-zone check (RD=0)" : "Fresh nonce lookup (RD=1)"}</div>
+      <div class="pc-stat">${p.status} ${p.canary_hit ? "· Witness✓" : ""}</div>
+    `;
+    b.onclick = () => { aIdx = i; render(); animCur(); };
+    tabs.appendChild(b);
+  });
+
+  const m = muts[t.id] || {};
+  document.getElementById("mut-acl").className = "exp-btn" + (m.acl ? " mut-on" : "");
+  document.getElementById("mut-spoof").className = "exp-btn" + (m.spoof ? " mut-on" : "");
+  document.getElementById("mut-loss").className = "exp-btn" + (m.loss ? " mut-on" : "");
+
+  renderPdu(t, t.probes[aIdx] || t.probes[0]);
+}
+
+function renderPdu(t, p) {
+  if (!p) return;
+  document.getElementById("seq-b").textContent = `Seq #${p.seq || 1} · ${(p.transport || "udp").toUpperCase()}`;
+  document.getElementById("p-qn").textContent = `${p.qname} (${p.qtype})`;
+  document.getElementById("p-rt").textContent = p.rtt_ms != null ? `RTT: ${p.rtt_ms} ms` : "TIMEOUT (2000 ms)";
+  const f = p.flags || {aa:false,tc:false,rd:p.rd,ra:false}, sp = f.ra && !p.canary_hit && p.phase === "canary";
+  const bits = [
+    ["QR", p.status === "TIMEOUT" ? 0 : 1, p.status !== "TIMEOUT", false],
+    ["RD", f.rd ? 1 : 0, !!f.rd, false],
+    ["RA", f.ra ? 1 : 0, !!f.ra, sp],
+    ["AA", f.aa ? 1 : 0, !!f.aa, false],
+    ["TC", f.tc ? 1 : 0, !!f.tc, false],
+    ["RCODE", p.status, p.status === "NOERROR", p.status !== "NOERROR"]
+  ];
+  document.getElementById("fgrid").innerHTML = bits.map(x => `<div class="bit ${x[3] ? 'warn' : (x[2] ? 'on' : '')}"><div>${x[0]}</div><div>${x[1]}</div></div>`).join("");
+  const fl = ((p.status === "TIMEOUT" ? 0 : 1) << 15) | ((f.aa ? 1 : 0) << 10) | ((f.tc ? 1 : 0) << 9) | ((f.rd ? 1 : 0) << 8) | ((f.ra ? 1 : 0) << 7) | ((p.rcode || 0) & 15);
+  document.getElementById("hex").textContent = `RFC 1035 Header: ID=${((0x1337 + (p.seq || 1) * 79) & 0xffff).toString(16)} FLAGS=0x${fl.toString(16).padStart(4, "0")} QD=1 AN=${(p.answers || []).length}\nAnswers: ${(p.answers || []).join(", ") || "(none)"}`;
+  document.getElementById("cbox").innerHTML = p.canary_hit
+    ? `<b>[WITNESS HIT]</b> client ${(p.canary_sources || [])[0] || t.ip}: query <b>${p.qname} IN A</b> &rarr; 192.0.2.53`
+    : (p.phase === "baseline" ? `Baseline queries <code>ns.lab.test</code> (RD=0).` : `<b>[0 HITS]</b> <code>rl-canary (10.10.0.5)</code> never received a query for <code>${p.qname}</code>.`);
+  document.getElementById("amp-t").textContent = `${p.query_bytes || 53}B query → ${p.reply_bytes || 0}B reply`;
+  const rl = t.verdict.label, ac = evalMode(t, mode);
+  document.getElementById("v-box").innerHTML =
+    `<div><b>ResolverLens:</b> <code>${rl.toUpperCase()}</code> (${t.verdict.rule}) · <b>Truth:</b> <code>${t.expected.toUpperCase()}</code></div>` +
+    `<div style="margin-top:4px;color:var(--muted)">${t.verdict.detail || ""}</div>` +
+    (ac !== rl ? `<div style="margin-top:4px;color:var(--rec);font-weight:800">&#9888; ${mode} misclassifies this as ${ac.toUpperCase()}!</div>` : "");
+}
+
+function animSegment(layer, s, cb) {
+  const ns = "http://www.w3.org/2000/svg";
+  const ln = document.createElementNS(ns, "line");
+  ln.setAttribute("x1", s.x1); ln.setAttribute("y1", s.y1);
+  ln.setAttribute("x2", s.x2); ln.setAttribute("y2", s.y2);
+  ln.setAttribute("stroke", s.c); ln.setAttribute("stroke-width", "3.2");
+  if (s.marker) ln.setAttribute("marker-end", `url(#${s.marker})`);
+  layer.appendChild(ln);
+
+  const mover = document.createElementNS(ns, "g");
+  const circle = document.createElementNS(ns, "circle");
+  circle.setAttribute("r", "8");
+  circle.setAttribute("fill", s.c);
+  circle.setAttribute("stroke", "#ffffff");
+  circle.setAttribute("stroke-width", "2.5");
+  mover.appendChild(circle);
+  layer.appendChild(mover);
+
+  const t0 = performance.now();
+  const dur = 390;
+  function step(now) {
+    const p = Math.min(1, (now - t0) / dur);
+    const cx = s.x1 + (s.x2 - s.x1) * p;
+    const cy = s.y1 + (s.y2 - s.y1) * p;
+    mover.setAttribute("transform", `translate(${cx},${cy})`);
+    if (p < 1) {
+      requestAnimationFrame(step);
+    } else {
+      mover.remove();
+      const mx = (s.x1 + s.x2) / 2;
+      const my = (s.y1 + s.y2) / 2 + (s.labelOffsetY || 0);
+      const badge = document.createElementNS(ns, "g");
+      badge.setAttribute("transform", `translate(${mx},${my})`);
+      const w = Math.max(82, s.l.length * 7.4 + 16);
+      const rect = document.createElementNS(ns, "rect");
+      rect.setAttribute("x", -w / 2); rect.setAttribute("y", "-11");
+      rect.setAttribute("width", w); rect.setAttribute("height", "22");
+      rect.setAttribute("rx", "11"); rect.setAttribute("fill", s.c);
+      const tx = document.createElementNS(ns, "text");
+      tx.setAttribute("text-anchor", "middle"); tx.setAttribute("y", "4");
+      tx.setAttribute("fill", "#ffffff"); tx.setAttribute("font-size", "11");
+      tx.setAttribute("font-weight", "800");
+      tx.textContent = s.l;
+      badge.appendChild(rect); badge.appendChild(tx);
+      layer.appendChild(badge);
+      setTimeout(cb, 75);
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+function animCur() {
+  if (timer) clearTimeout(timer);
+  const t = curT(), p = t.probes[aIdx] || t.probes[0];
+  const ly = document.getElementById("pkt-layer"), lg = document.getElementById("log");
+  ly.innerHTML = ""; lg.innerHTML = "";
+
+  const segs = [{
+    x1: 208, y1: 92, x2: 333, y2: 92, c: "#0284c7", marker: "arr-blue",
+    l: `1. ${p.phase === "baseline" ? "BASE RD=0" : "CANARY RD=1"}`, labelOffsetY: -14,
+    txt: `<code>rl-ext (10.10.2.10) &rarr; rl-${t.id} (${t.ip})</code> | Query <b>${p.qname}</b> (RD=${p.rd ? 1 : 0})`
+  }];
+
+  if (p.canary_hit) {
+    if (t.hops && t.hops.length) {
+      segs.push({
+        x1: 458, y1: 176, x2: 458, y2: 256, c: "#7c3aed", marker: "arr-purple",
+        l: `2. FWD → rl-${t.hops[0]}`, s: "hit",
+        txt: `<code>rl-${t.id} &rarr; rl-${t.hops.join(" &rarr; rl-")}</code> | Forwarded upstream`
+      });
+      segs.push({
+        x1: 580, y1: 305, x2: 706, y2: 210, c: "#7c3aed", marker: "arr-purple",
+        l: "3. WITNESS Q", labelOffsetY: 14, s: "hit",
+        txt: `<code>Upstream (${(p.canary_sources || [])[0]}) &rarr; rl-canary (10.10.0.5)</code> | Logged at witness!`
+      });
+      segs.push({
+        x1: 708, y1: 172, x2: 582, y2: 128, c: "#059669", marker: "arr-green",
+        l: "4. 192.0.2.53", labelOffsetY: -14, s: "ok",
+        txt: `<code>rl-canary &rarr; rl-${t.id}</code> | Marker IP 192.0.2.53 returned`
+      });
+    } else {
+      segs.push({
+        x1: 580, y1: 95, x2: 706, y2: 162, c: "#7c3aed", marker: "arr-purple",
+        l: "2. WITNESS Q", labelOffsetY: -15, s: "hit",
+        txt: `<code>rl-${t.id} &rarr; rl-canary (10.10.0.5)</code> | Canary logs query from ${t.ip}!`
+      });
+      segs.push({
+        x1: 708, y1: 212, x2: 582, y2: 145, c: "#059669", marker: "arr-green",
+        l: "3. 192.0.2.53", labelOffsetY: 16, s: "ok",
+        txt: `<code>rl-canary (10.10.0.5) &rarr; rl-${t.id}</code> | Answers 192.0.2.53 (AA=1)`
+      });
+    }
+  } else if (p.phase === "canary" && p.status === "NOERROR") {
+    segs.push({
+      x1: 580, y1: 118, x2: 688, y2: 118, c: "#dc2626", marker: "arr-red",
+      l: "NO CANARY LOOKUP!", labelOffsetY: -14, s: "drop",
+      txt: `<b>DECEPTIVE REPLY:</b> Server returned 192.0.2.53 locally without querying <code>rl-canary</code>!`
+    });
+  }
+
+  const stepNum = segs.length + 1;
+  if (p.status === "TIMEOUT") {
+    segs.push({
+      x1: 335, y1: 142, x2: 235, y2: 142, c: "#dc2626", marker: "arr-red",
+      l: `${stepNum}. TIMEOUT (2s)`, labelOffsetY: 16, s: "drop",
+      txt: `<code>rl-${t.id} &times; rl-ext</code> | Timed out after 2000 ms`
+    });
+  } else {
+    const isRef = p.status === "REFUSED";
+    segs.push({
+      x1: 335, y1: 142, x2: 210, y2: 142, c: isRef ? "#d97706" : "#059669",
+      marker: isRef ? "arr-amber" : "arr-green",
+      l: `${stepNum}. ${p.status} (${p.rtt_ms}ms)`, labelOffsetY: 16, s: "ok",
+      txt: `<code>rl-${t.id} &rarr; rl-ext (10.10.2.10)</code> | Reply <b>${p.status}</b> in ${p.rtt_ms} ms`
+    });
+  }
+
+  let i = 0;
+  function next() {
+    if (i >= segs.length) return;
+    const s = segs[i], d = document.createElement("div");
+    d.className = "hop " + (s.s || "");
+    d.innerHTML = `<b>Hop ${i + 1}:</b> ${s.txt}`;
+    lg.appendChild(d);
+    animSegment(ly, s, () => { i++; next(); });
+  }
+  next();
+}
+
+function animAll() {
+  const t = curT(); let i = 0;
+  function step() {
+    if (i >= t.probes.length) return;
+    aIdx = i; render(); animCur(); i++;
+    if (i < t.probes.length) timer = setTimeout(step, 1700);
+  }
+  step();
+}
+
+function runCtl() {
+  const t = curT(), ly = document.getElementById("pkt-layer"), lg = document.getElementById("log");
+  ly.innerHTML = ""; lg.innerHTML = "";
+  const auth = t.behavior === "authoritative_only" || t.behavior === "ra_refuser";
+  lg.innerHTML = `<div class="hop ok"><b>Control Vantage:</b> <code>rl-ctl (10.10.1.10) &rarr; rl-${t.id}</code> | Trusted range probe (10.10.1.0/24)</div>`;
+  animSegment(ly, {x1:208, y1:295, x2:333, y2:155, c:"#059669", marker:"arr-green", l:"1. CTL RD=1", labelOffsetY:-14}, () => {
+    lg.innerHTML += `<div class="hop hit"><b>Result:</b> ${auth ? "REFUSED (Recursion disabled globally)" : "NOERROR + Canary Hit! Confirms active ACL policy for 10.10.1.0/24."}</div>`;
+    animSegment(ly, {x1:335, y1:170, x2:210, y2:320, c:auth ? "#2563eb" : "#059669", marker:auth ? "arr-blue" : "arr-green", l:auth ? "2. REFUSED" : "2. ACL OK!", labelOffsetY:15}, () => {});
+  });
+}
+
+function togMut(k) { const m = muts[tid] || {acl:false,spoof:false,loss:false}; m[k] = !m[k]; muts[tid] = m; render(); animCur(); }
+function rstMut() { delete muts[tid]; render(); animCur(); }
+function toggleDrawer() { const o = document.getElementById("drawer").classList.toggle("open"); if (o) loadRuns(); }
+
+async function loadRuns() {
+  const b = document.getElementById("runs-box"), rp = META.repo || "aiori-hackathon/A3-PS012-TC045";
+  b.innerHTML = `<div class="rcard">Querying GitHub Actions API...</div>`;
+  try {
+    const r = await fetch(`https://api.github.com/repos/${rp}/actions/workflows/demo.yml/runs?per_page=4`);
+    const j = await r.json();
+    b.innerHTML = (j.workflow_runs || []).map(x => `<div class="rcard"><b>Run #${x.run_number}</b> (${x.conclusion || x.status})<br><span style="color:var(--muted)">SHA: ${(x.head_sha || "").slice(0, 7)}</span> · <a href="${x.html_url}" target="_blank" style="color:var(--accent)">View Run &rarr;</a></div>`).join("") || `<div class="rcard">No runs found.</div>`;
+  } catch(e) {
+    b.innerHTML = `<div class="rcard"><a href="https://github.com/${rp}/actions" target="_blank" style="color:var(--accent)">Open GitHub Actions &rarr;</a></div>`;
+  }
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  try {
+    const saved = localStorage.getItem("rlens-theme");
+    if (saved === "light" || saved === "dark") document.documentElement.setAttribute("data-theme", saved);
+  } catch(e) {}
+  document.getElementById("meta-badge").textContent = META.run_id ? `Live CI Run #${META.run_id} (${META.sha})` : `Verified Telemetry (${META.sha || "main"})`;
+  render();
+  animCur();
+});
+</script>
+</body>
+</html>
